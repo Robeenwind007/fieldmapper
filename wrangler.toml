@@ -1,0 +1,8 @@
+name = "fieldmapper"
+compatibility_date = "2024-09-23"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fieldmapper-db"
+database_id = "9355b676-9b6b-4bed-b352-ee5b17c15023"
