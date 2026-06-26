@@ -70,6 +70,7 @@ export default function App() {
               targetOnlyMode={mapper.targetOnlyMode}
               enableTargetOnlyMode={mapper.enableTargetOnlyMode}
               disableTargetOnlyMode={mapper.disableTargetOnlyMode}
+              onImportMapping={handleLoadSaved}
             />
           )}
           {mapper.step === STEPS.MAPPING && mapper.targetOnlyMode && (

@@ -1,4 +1,5 @@
-import { ArrowRight, BookOpen, AlertTriangle, FileCog } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { ArrowRight, BookOpen, AlertTriangle, FileCog, FileJson } from 'lucide-react'
 import { UploadZone, Btn } from './UI'
 import SheetPicker from './SheetPicker'
 
@@ -31,11 +32,31 @@ function FileSizeWarning({ file }) {
   return null
 }
 
-export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice, targetOnlyMode, enableTargetOnlyMode, disableTargetOnlyMode }) {
+export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice, targetOnlyMode, enableTargetOnlyMode, disableTargetOnlyMode, onImportMapping }) {
   const hasTarget = target.headers.length > 0
   const hasPending = !!pendingSheet
   const canProceed = hasTarget && !hasPending && (targetOnlyMode || source.headers.length > 0)
   const isBlocked = source.file && source.file.size > MAX_SIZE
+  const importJsonRef = useRef()
+  const [importError, setImportError] = useState(null)
+
+  function handleImportJson(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setImportError(null)
+    const reader = new FileReader()
+    reader.onload = evt => {
+      try {
+        const data = JSON.parse(evt.target.result)
+        if (!data.name || !data.rules) throw new Error('Format invalide')
+        onImportMapping(data)
+      } catch (err) {
+        setImportError('Fichier de mapping invalide : ' + err.message)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   return (
     <div>
@@ -109,14 +130,29 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
               </button>
             </div>
           ) : (
-            <UploadZone
-              label="Fichier cible si fichier modele mapping absent"
-              hint="XLS, XLSX, CSV, TXT & FabDis"
-              file={target.file || (pendingSheet?.which === 'target' ? pendingSheet.file : null)}
-              loading={loading.target}
-              error={errors.target}
-              onChange={f => loadFile('target', f)}
-            />
+            <>
+              <UploadZone
+                label="Fichier cible si fichier modele mapping absent"
+                hint="XLS, XLSX, CSV, TXT & FabDis"
+                file={target.file || (pendingSheet?.which === 'target' ? pendingSheet.file : null)}
+                loading={loading.target}
+                error={errors.target}
+                onChange={f => loadFile('target', f)}
+              />
+              {!target.file && !hasPending && (
+                <div className="mt-2 text-center">
+                  <input type="file" accept=".json" ref={importJsonRef} onChange={handleImportJson} className="hidden" />
+                  <button
+                    onClick={() => importJsonRef.current.click()}
+                    className="inline-flex items-center gap-1.5 text-xs text-ink-400 hover:text-bordeaux-600 transition-colors">
+                    <FileJson size={12} /> ou importer un mapping (.json) à la place du fichier
+                  </button>
+                  {importError && (
+                    <p className="text-xs text-red-500 mt-1">{importError}</p>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {pendingSheet?.which === 'target' && (

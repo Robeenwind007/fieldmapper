@@ -206,7 +206,13 @@ export default function DocumentationPage({ onClose }) {
             <SubTitle>Import / export JSON</SubTitle>
             <p>
               Chaque mapping peut être exporté en fichier .json pour être partagé entre
-              collègues, puis réimporté en mapping local sur un autre poste.
+              collègues, puis réimporté en mapping local sur un autre poste, via la
+              bibliothèque de mappings.
+            </p>
+            <p>
+              À l'étape Import, un lien permet aussi de charger directement un fichier
+              .json exporté à la place du fichier cible — utile pour réutiliser
+              rapidement un gabarit sans passer par la bibliothèque.
             </p>
           </Section>
 

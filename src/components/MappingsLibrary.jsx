@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { BookOpen, Trash2, X, ChevronRight, Download, Upload, Lock, Globe } from 'lucide-react'
-import { fetchMappings, deleteMapping, getLocalMappings, saveLocalMapping, deleteLocalMapping } from '../lib/api'
+import { fetchMappings, fetchMapping, deleteMapping, getLocalMappings, saveLocalMapping, deleteLocalMapping } from '../lib/api'
 import { Btn, ConfirmModal } from './UI'
 
 const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
@@ -74,23 +74,46 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     setConfirmDelete(null)
   }
 
-  function handleSelect(m) {
-    const parsed = {
-      ...m,
-      rules: typeof m.rules === 'string' ? JSON.parse(m.rules) : m.rules
+  const [fetchingId, setFetchingId] = useState(null)
+
+  async function getFullMapping(m) {
+    if (m.isLocal) {
+      return { ...m, rules: typeof m.rules === 'string' ? JSON.parse(m.rules) : m.rules }
     }
-    onLoad(parsed)
-    setOpen(false)
+    setFetchingId(m.id)
+    try {
+      const { mapping } = await fetchMapping(m.id)
+      return mapping
+    } finally {
+      setFetchingId(null)
+    }
   }
 
-  function handleExport(m, e) {
+  async function handleSelect(m) {
+    try {
+      const full = await getFullMapping(m)
+      onLoad(full)
+      setOpen(false)
+    } catch (e) {
+      setError('Impossible de charger ce mapping')
+    }
+  }
+
+  async function handleExport(m, e) {
     e.stopPropagation()
-    const rules = typeof m.rules === 'string' ? JSON.parse(m.rules) : m.rules
+    let full
+    try {
+      full = await getFullMapping(m)
+    } catch (err) {
+      setImportMsg('Erreur : impossible de récupérer ce mapping')
+      return
+    }
+    const rules = typeof full.rules === 'string' ? JSON.parse(full.rules) : full.rules
     const payload = {
-      name: m.name,
-      description: m.description,
-      source_file: m.source_file,
-      target_file: m.target_file,
+      name: full.name,
+      description: full.description,
+      source_file: full.source_file,
+      target_file: full.target_file,
       rules,
       exported_at: new Date().toISOString(),
       version: '2.1.0',
@@ -98,7 +121,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `mapping-${m.name.replace(/\s+/g, '-').toLowerCase()}.json`
+    a.download = `mapping-${full.name.replace(/\s+/g, '-').toLowerCase()}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -187,16 +210,20 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
                   {tab === 'local' ? 'Aucun mapping local sur cet appareil' : 'Aucun mapping public'}
                 </p>
               )}
-              {mappings.map(m => (
+              {mappings.map(m => {
+                const isFetching = fetchingId === m.id
+                return (
                 <div key={m.id}
-                  className="flex items-start gap-2 p-3 rounded-xl hover:bg-ink-50 cursor-pointer group"
-                  onClick={() => handleSelect(m)}>
+                  className={`flex items-start gap-2 p-3 rounded-xl hover:bg-ink-50 group transition-opacity
+                    ${isFetching ? 'opacity-50 cursor-wait' : 'cursor-pointer'}`}
+                  onClick={() => !isFetching && handleSelect(m)}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 mb-0.5">
                       {m.isLocal
                         ? <Lock size={10} className="text-ink-400 flex-shrink-0" />
                         : <Globe size={10} className="text-teal-500 flex-shrink-0" />}
                       <p className="text-sm font-medium text-ink-800 truncate">{m.name}</p>
+                      {isFetching && <span className="text-xs text-ink-400">Chargement…</span>}
                     </div>
                     <p className="text-xs text-ink-400 truncate">
                       {m.source_file} → {m.target_file}
@@ -207,8 +234,9 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      onClick={e => handleExport(m, e)}
-                      className="p-1 rounded-lg text-ink-300 hover:text-cobalt-600 hover:bg-cobalt-50"
+                      onClick={e => !isFetching && handleExport(m, e)}
+                      disabled={isFetching}
+                      className="p-1 rounded-lg text-ink-300 hover:text-cobalt-600 hover:bg-cobalt-50 disabled:cursor-wait"
                       title="Exporter en JSON">
                       <Download size={13} />
                     </button>
@@ -221,7 +249,8 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
                     <ChevronRight size={13} className="text-ink-300" />
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
 
           </div>
