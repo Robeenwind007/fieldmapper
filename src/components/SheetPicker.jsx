@@ -28,7 +28,7 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
       <div className="flex items-center gap-2 mb-3">
         <Layers size={14} className="text-ink-500" />
         <p className="text-xs font-medium text-ink-700">
-          {sheetNames.length} onglets detectes — comment voulez-vous les lire ?
+          {sheetNames.length} onglets détectés — comment voulez-vous les lire ?
         </p>
       </div>
 
@@ -39,7 +39,7 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
           <BookOpen size={14} className={`mt-0.5 flex-shrink-0 ${mode === 'single' ? 'text-ink-900' : 'text-ink-400'}`} />
           <div>
             <p className={`text-xs font-medium ${mode === 'single' ? 'text-ink-900' : 'text-ink-600'}`}>Un seul onglet</p>
-            <p className="text-xs text-ink-400">Selectionner un onglet specifique</p>
+            <p className="text-xs text-ink-400">Sélectionner un onglet spécifique</p>
           </div>
         </button>
 
@@ -60,8 +60,8 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
               className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-colors ${mode === 'merge_selected' ? 'border-ink-900 bg-white' : 'border-ink-200 hover:bg-white'}`}>
               <CheckSquare size={14} className={`mt-0.5 flex-shrink-0 ${mode === 'merge_selected' ? 'text-ink-900' : 'text-ink-400'}`} />
               <div>
-                <p className={`text-xs font-medium ${mode === 'merge_selected' ? 'text-ink-900' : 'text-ink-600'}`}>Fusionner les onglets selectionnes</p>
-                <p className="text-xs text-ink-400">Choisir les onglets a fusionner</p>
+                <p className={`text-xs font-medium ${mode === 'merge_selected' ? 'text-ink-900' : 'text-ink-600'}`}>Fusionner les onglets sélectionnés</p>
+                <p className="text-xs text-ink-400">Choisir les onglets à fusionner</p>
               </div>
             </button>
           </>
@@ -74,7 +74,7 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
             <Layers size={14} className={`mt-0.5 flex-shrink-0 ${mode === 'per_sheet' ? 'text-teal-700' : 'text-ink-400'}`} />
             <div>
               <p className={`text-xs font-medium ${mode === 'per_sheet' ? 'text-teal-800' : 'text-ink-600'}`}>Mapper onglet par onglet</p>
-              <p className="text-xs text-ink-400">Generer un fichier multi-onglets (ex: FAB-DIS)</p>
+              <p className="text-xs text-ink-400">Générer un fichier multi-onglets (ex: FAB-DIS)</p>
             </div>
           </button>
         )}
@@ -83,7 +83,7 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
       {(mode === 'single' || mode === 'merge_selected') && (
         <div className="mb-4">
           <p className="text-xs font-medium text-ink-600 mb-2">
-            {mode === 'single' ? 'Choisir l onglet :' : 'Selectionner les onglets a fusionner :'}
+            {mode === 'single' ? 'Choisir l\'onglet :' : 'Sélectionner les onglets à fusionner :'}
           </p>
           <div className="flex flex-wrap gap-2">
             {sheetNames.map(name => {
@@ -102,7 +102,7 @@ export default function SheetPicker({ which, sheetNames, onResolve }) {
             })}
           </div>
           {mode === 'merge_selected' && selected.length < 2 && (
-            <p className="text-xs text-amber-600 mt-2">Selectionnez au moins 2 onglets</p>
+            <p className="text-xs text-amber-600 mt-2">Sélectionnez au moins 2 onglets</p>
           )}
         </div>
       )}

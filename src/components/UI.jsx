@@ -108,7 +108,7 @@ export function TypeBadge({ type }) {
     bool:   'bg-purple-100 text-purple-800',
     empty:  'bg-ink-50 text-ink-600',
   }
-  const labels = { text: 'texte', number: 'nombre', date: 'date', bool: 'booleen', empty: 'vide' }
+  const labels = { text: 'texte', number: 'nombre', date: 'date', bool: 'booléen', empty: 'vide' }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cfg[type] || cfg.empty}`}>
       {labels[type] || type}

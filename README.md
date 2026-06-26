@@ -35,6 +35,9 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.6.3 — Juin 2026
+- Passage complet sur tous les libellés visibles de l'application : correction d'une quarantaine d'accents manquants, répartis sur `UI.jsx`, `StepImport.jsx`, `StepMapping.jsx`, `StepExport.jsx`, `SheetPicker.jsx`, `MappingsLibrary.jsx`, `SaveMappingModal.jsx` (ex : Aperçu, Télécharger, Sélectionner, Générer, Sauvegardé, Mémoriser, Découpez, booléen, Visibilité, Privé...)
+
 ### v2.6.2 — Juin 2026
 - Harmonisation : bouton "Changer de fichier" ajouté côté source dans `UploadZone` (`src/components/UI.jsx`), aligné sur le comportement qui n'existait jusque-là que côté cible
 - Une fois un fichier chargé, cliquer sur la zone ne rouvre plus le sélecteur implicitement ; seul le bouton dédié déclenche le changement

@@ -39,7 +39,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     setConfirmDelete({
       id,
       type: 'public',
-      message: 'Ce mapping public sera supprime pour tous les utilisateurs.',
+      message: 'Ce mapping public sera supprimé pour tous les utilisateurs.',
       requireCode: true,
       code: '',
       codeError: false,
@@ -51,7 +51,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     setConfirmDelete({
       id,
       type: 'local',
-      message: 'Ce mapping local sera supprime de cet appareil.',
+      message: 'Ce mapping local sera supprimé de cet appareil.',
       requireCode: false,
       code: '',
       codeError: false,
@@ -137,14 +137,14 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
         const data = JSON.parse(evt.target.result)
         if (!data.name || !data.rules) throw new Error('Format invalide')
         saveLocalMapping({
-          name: data.name + ' (importe)',
+          name: data.name + ' (importé)',
           description: data.description || '',
           source_file: data.source_file || 'inconnu',
           target_file: data.target_file || 'inconnu',
           rules: data.rules,
         })
         setLocalMappings(getLocalMappings())
-        setImportMsg('Mapping importe !')
+        setImportMsg('Mapping importé !')
         setTab('local')
       } catch (err) {
         setImportMsg('Erreur : ' + err.message)

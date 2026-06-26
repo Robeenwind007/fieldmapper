@@ -17,7 +17,7 @@ function FileSizeWarning({ file }) {
     <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-red-50 border border-red-200">
       <AlertTriangle size={13} className="text-red-500 flex-shrink-0 mt-0.5" />
       <p className="text-xs text-red-700">
-        Fichier trop volumineux ({formatSize(file.size)}) — risque de crash au-dessus de 20 Mo. Decoupez-le en plusieurs fichiers.
+        Fichier trop volumineux ({formatSize(file.size)}) — risque de crash au-dessus de 20 Mo. Découpez-le en plusieurs fichiers.
       </p>
     </div>
   )
@@ -25,7 +25,7 @@ function FileSizeWarning({ file }) {
     <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
       <AlertTriangle size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
       <p className="text-xs text-amber-700">
-        Fichier volumineux ({formatSize(file.size)}) — le traitement peut etre lent sur certains appareils.
+        Fichier volumineux ({formatSize(file.size)}) — le traitement peut être lent sur certains appareils.
       </p>
     </div>
   )
@@ -121,8 +121,8 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
           {savedMappingName ? (
             <div className="border-2 border-teal-400 bg-teal-50 rounded-xl p-6 text-center">
               <div className="text-2xl mb-2 flex justify-center text-teal-600">OK</div>
-              <p className="text-sm font-medium text-teal-800 mb-1">Structure chargee depuis le mapping</p>
-              <p className="text-xs text-teal-600">{target.headers.length} colonnes definies</p>
+              <p className="text-sm font-medium text-teal-800 mb-1">Structure chargée depuis le mapping</p>
+              <p className="text-xs text-teal-600">{target.headers.length} colonnes définies</p>
               <button
                 onClick={() => window.location.reload()}
                 className="mt-3 text-xs text-teal-600 underline hover:text-teal-800">

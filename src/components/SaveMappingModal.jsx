@@ -63,7 +63,7 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
 
         {saved ? (
           <div className="text-center py-4">
-            <p className="text-teal-700 font-medium">Mapping sauvegarde !</p>
+            <p className="text-teal-700 font-medium">Mapping sauvegardé !</p>
           </div>
         ) : (
           <>
@@ -99,23 +99,23 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
                     className="mt-0.5"
                   />
                   <span className="text-xs text-amber-900">
-                    Memoriser aussi {constantRules.length > 1 ? 'les valeurs fixes saisies' : 'la valeur fixe saisie'} ({constantRules.map(r => `${r.targetField} = "${r.constantValue}"`).join(', ')}).
+                    Mémoriser aussi {constantRules.length > 1 ? 'les valeurs fixes saisies' : 'la valeur fixe saisie'} ({constantRules.map(r => `${r.targetField} = "${r.constantValue}"`).join(', ')}).
                     <br />
-                    Par defaut, seul le champ reste marque "valeur fixe" — la saisie sera a refaire a chaque reutilisation du mapping.
+                    Par défaut, seul le champ reste marqué "valeur fixe" — la saisie sera à refaire à chaque réutilisation du mapping.
                   </span>
                 </label>
               </div>
             )}
 
             <div className="mb-4">
-              <label className="block text-xs font-medium text-ink-600 mb-2">Visibilite</label>
+              <label className="block text-xs font-medium text-ink-600 mb-2">Visibilité</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setType('local')}
                   className={`flex items-center gap-2 p-3 rounded-xl border text-sm transition-colors ${type === 'local' ? 'border-ink-900 bg-ink-900 text-white' : 'border-ink-200 text-ink-600 hover:bg-ink-50'}`}>
                   <Lock size={14} />
                   <div className="text-left">
-                    <p className="font-medium text-xs">Prive</p>
+                    <p className="font-medium text-xs">Privé</p>
                     <p className={`text-xs ${type === 'local' ? 'text-ink-300' : 'text-ink-400'}`}>Cet appareil</p>
                   </div>
                 </button>

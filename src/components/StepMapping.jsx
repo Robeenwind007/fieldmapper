@@ -65,12 +65,12 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
       )}
 
       <Alert type="info">
-        Les types sont detectes automatiquement. Des transformations sont proposees en cas d incompatibilite.
+        Les types sont détectés automatiquement. Des transformations sont proposées en cas d'incompatibilité.
       </Alert>
 
       {warnCount > 0 && (
         <Alert type="warn">
-          {warnCount} champ(s) avec des types incompatibles — des transformations sont recommandees.
+          {warnCount} champ(s) avec des types incompatibles — des transformations sont recommandées.
         </Alert>
       )}
 
@@ -177,7 +177,7 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
           <ArrowLeft size={14} /> Retour
         </Btn>
         <Btn variant="primary" onClick={handleNext}>
-          Apercu et export <ArrowRight size={14} />
+          Aperçu et export <ArrowRight size={14} />
         </Btn>
       </div>
     </div>

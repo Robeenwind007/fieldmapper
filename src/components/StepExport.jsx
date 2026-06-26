@@ -80,14 +80,14 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
     <div>
       <div className="grid grid-cols-4 gap-3 mb-4">
         <StatCard label="Lignes converties" value={stats.rows} />
-        <StatCard label="Champs mappes" value={`${stats.mapped}/${stats.total}`} />
+        <StatCard label="Champs mappés" value={`${stats.mapped}/${stats.total}`} />
         <StatCard label="Transformations" value={transformedCount} />
         <StatCard label="Avertissements" value={stats.warns} />
       </div>
 
       {isMultiSheet && (
         <div className="mb-4 p-3 bg-cobalt-50 border border-cobalt-200 rounded-lg">
-          <p className="text-xs font-medium text-cobalt-800 mb-2">Onglets a exporter</p>
+          <p className="text-xs font-medium text-cobalt-800 mb-2">Onglets à exporter</p>
           <div className="flex flex-wrap gap-2">
             {target.sheetNames.map(name => {
               const sr = sheetRules[name] || []
@@ -108,7 +108,7 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
       <div className="border border-ink-100 rounded-xl overflow-hidden mb-4">
         <div className="px-4 py-2.5 bg-ink-50 border-b border-ink-100">
           <p className="text-xs font-medium text-ink-500">
-            Apercu — 5 premieres lignes
+            Aperçu — 5 premières lignes
             {target.selectedSheet && !isMultiSheet && (
               <span className="ml-2 text-ink-400">[{target.selectedSheet}]</span>
             )}
@@ -159,7 +159,7 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
 
       {exported && (
         <Alert type="success">
-          Fichier telecharge — {stats.rows} lignes converties, {stats.mapped} champs mappes.
+          Fichier téléchargé — {stats.rows} lignes converties, {stats.mapped} champs mappés.
         </Alert>
       )}
 
@@ -175,7 +175,7 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
           <Save size={14} /> Sauvegarder le mapping
         </Btn>
         <Btn variant="primary" onClick={doExport}>
-          <Download size={14} /> Telecharger
+          <Download size={14} /> Télécharger
         </Btn>
       </div>
 
