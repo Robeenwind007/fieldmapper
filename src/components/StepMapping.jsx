@@ -1,13 +1,14 @@
-import { ArrowLeft, ArrowRight, Layers, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Layers, Check, Pin } from 'lucide-react'
 import { TypeBadge, CompatBadge, Alert, Btn } from './UI'
+import { CONSTANT_FIELD } from '../hooks/useMapper'
 
-export default function StepMapping({ enrichedRules, source, target, updateRule, updateTransform, onBack, onNext, activeTargetSheet, sheetRules, switchTargetSheet, saveCurrentSheetRules }) {
+export default function StepMapping({ enrichedRules, source, target, updateRule, updateTransform, updateConstant, onBack, onNext, activeTargetSheet, sheetRules, switchTargetSheet, saveCurrentSheetRules }) {
   const warnCount = enrichedRules.filter(r => r.compat === 'warn').length
   const isMultiSheet = target.perSheet && target.sheetNames?.length > 0
 
   const usedSourceFields = new Set(
     enrichedRules
-      .filter(r => r.sourceField)
+      .filter(r => r.sourceField && r.sourceField !== CONSTANT_FIELD)
       .map(r => r.sourceField)
   )
 
@@ -100,26 +101,56 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
                       <TypeBadge type={rule.tgtType} />
                     </td>
                     <td className="px-3 py-2 border-b border-ink-50">
-                      <select
-                        value={rule.sourceField}
-                        onChange={e => updateRule(rule.targetField, e.target.value)}
-                        className={`w-full text-xs rounded-md border px-2 py-1.5 h-7 bg-white font-sans
-                          focus:outline-none focus:ring-1 focus:ring-ink-400
-                          ${rule.sourceField ? 'border-teal-400 bg-teal-50 text-teal-900' : 'border-ink-200 text-ink-700'}`}>
-                        <option value="">— aucun —</option>
-                        {availableFields.map(h => (
-                          <option key={h} value={h}>{h} ({source.types[h]})</option>
-                        ))}
-                      </select>
+                      {rule.isConstant ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            autoFocus
+                            value={rule.constantValue}
+                            onChange={e => updateConstant(rule.targetField, e.target.value)}
+                            placeholder="Valeur fixe…"
+                            className="w-full text-xs rounded-md border border-amber-300 bg-amber-50 text-amber-900 px-2 py-1.5 h-7 font-sans
+                              focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-amber-400"
+                          />
+                          <button
+                            type="button"
+                            title="Revenir au mapping depuis la source"
+                            onClick={() => updateRule(rule.targetField, '')}
+                            className="flex-shrink-0 text-ink-300 hover:text-ink-600 transition-colors">
+                            <ArrowLeft size={13} />
+                          </button>
+                        </div>
+                      ) : (
+                        <select
+                          value={rule.sourceField}
+                          onChange={e => updateRule(rule.targetField, e.target.value)}
+                          className={`w-full text-xs rounded-md border px-2 py-1.5 h-7 bg-white font-sans
+                            focus:outline-none focus:ring-1 focus:ring-ink-400
+                            ${rule.sourceField ? 'border-teal-400 bg-teal-50 text-teal-900' : 'border-ink-200 text-ink-700'}`}>
+                          <option value="">— aucun —</option>
+                          {availableFields.map(h => (
+                            <option key={h} value={h}>{h} ({source.types[h]})</option>
+                          ))}
+                          <option value={CONSTANT_FIELD}>📌 Valeur fixe…</option>
+                        </select>
+                      )}
                     </td>
                     <td className="px-3 py-2 border-b border-ink-50">
-                      {rule.srcType && <TypeBadge type={rule.srcType} />}
+                      {rule.isConstant ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                          <Pin size={10} /> fixe
+                        </span>
+                      ) : rule.srcType && <TypeBadge type={rule.srcType} />}
                     </td>
                     <td className="px-3 py-2 border-b border-ink-50">
-                      <CompatBadge compat={rule.compat} />
+                      {rule.isConstant ? (
+                        <span className="text-xs text-ink-300">—</span>
+                      ) : <CompatBadge compat={rule.compat} />}
                     </td>
                     <td className="px-3 py-2 border-b border-ink-50">
-                      {rule.transformOptions.length > 0 ? (
+                      {rule.isConstant ? (
+                        <span className="text-xs text-ink-300">—</span>
+                      ) : rule.transformOptions.length > 0 ? (
                         <select
                           value={rule.transform}
                           onChange={e => updateTransform(rule.targetField, e.target.value)}

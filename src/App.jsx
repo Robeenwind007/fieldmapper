@@ -63,6 +63,7 @@ export default function App() {
               target={mapper.target}
               updateRule={mapper.updateRule}
               updateTransform={mapper.updateTransform}
+              updateConstant={mapper.updateConstant}
               onBack={handleBackToImport}
               onNext={() => mapper.setStep(STEPS.EXPORT)}
               activeTargetSheet={mapper.activeTargetSheet}

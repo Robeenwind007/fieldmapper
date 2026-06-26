@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft, Download, RotateCcw, Save } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { applyTransform } from '../lib/types'
+import { CONSTANT_FIELD } from '../hooks/useMapper'
 import { StatCard, Alert, Btn } from './UI'
 import SaveMappingModal from './SaveMappingModal'
 
@@ -10,6 +11,7 @@ function buildOutputRows(targetHeaders, sourceData, rules) {
     targetHeaders.map(tgt => {
       const rule = rules.find(r => r.targetField === tgt)
       if (!rule || !rule.sourceField) return ''
+      if (rule.sourceField === CONSTANT_FIELD) return rule.constantValue ?? ''
       return applyTransform(row[rule.sourceField] ?? '', rule.transform)
     })
   )
@@ -133,14 +135,18 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
                 <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-ink-50/40'}>
                   {row.map((cell, ci) => {
                     const rule = rules.find(r => r.targetField === target.headers[ci])
-                    const transformed = rule?.transform && rule.transform !== 'none'
+                    const isConstant = rule?.sourceField === CONSTANT_FIELD
+                    const transformed = !isConstant && rule?.transform && rule.transform !== 'none'
                     return (
                       <td key={ci}
                         className={`px-3 py-1.5 border-b border-ink-50 truncate
-                          ${transformed ? 'bg-teal-50 text-teal-900' :
+                          ${isConstant ? 'bg-amber-50 text-amber-900' :
+                            transformed ? 'bg-teal-50 text-teal-900' :
                             !rule?.sourceField ? 'text-ink-300' : 'text-ink-800'}`}
                         style={{ minWidth: 80 }}>
-                        {rule?.sourceField ? String(cell) : '—'}
+                        {isConstant
+                          ? (rule.constantValue ? String(cell) : <span className="italic text-amber-400">vide</span>)
+                          : rule?.sourceField ? String(cell) : '—'}
                       </td>
                     )
                   })}

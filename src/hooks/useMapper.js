@@ -3,6 +3,7 @@ import { parseFile, parseSheetFromWb, parseAllSheetsFromWb, parseSelectedSheetsF
 import { detectFileTypes, getCompatibility, getTransformOptions } from '../lib/types'
 
 export const STEPS = { IMPORT: 1, MAPPING: 2, EXPORT: 3 }
+export const CONSTANT_FIELD = '__constant__'
 
 const emptyFile = () => ({ file: null, headers: [], data: [], types: {}, sheetNames: [], selectedSheet: null, multiSheet: false, wb: null })
 
@@ -136,6 +137,7 @@ export function useMapper() {
         targetField: tgtField,
         sourceField: autoMatch || existing?.sourceField || '',
         transform: existing?.transform || 'none',
+        constantValue: existing?.constantValue || '',
       }
     })
     setRules(newRules)
@@ -144,8 +146,14 @@ export function useMapper() {
   const updateRule = useCallback((targetField, sourceField) => {
     setRules(prev => prev.map(r =>
       r.targetField === targetField
-        ? { ...r, sourceField, transform: 'none' }
+        ? { ...r, sourceField, transform: 'none', constantValue: sourceField === CONSTANT_FIELD ? r.constantValue : '' }
         : r
+    ))
+  }, [])
+
+  const updateConstant = useCallback((targetField, constantValue) => {
+    setRules(prev => prev.map(r =>
+      r.targetField === targetField ? { ...r, constantValue } : r
     ))
   }, [])
 
@@ -178,33 +186,44 @@ export function useMapper() {
     setSavedMappingName(saved.name)
     setRules(parsedRules.map(r => ({
       targetField: r.targetField,
-      sourceField: '',
+      sourceField: r.sourceField === CONSTANT_FIELD ? CONSTANT_FIELD : '',
       transform: r.transform || 'none',
+      constantValue: r.constantValue || '',
     })))
   }, [])
 
+  const isRuleFilled = r => {
+    if (!r.sourceField) return false
+    if (r.sourceField === CONSTANT_FIELD) return r.constantValue !== '' && r.constantValue != null
+    return true
+  }
+
   const stats = {
     rows: source.data.length,
-    mapped: rules.filter(r => r.sourceField).length,
+    mapped: rules.filter(isRuleFilled).length,
     total: rules.length,
-    transf: rules.filter(r => r.sourceField && r.transform && r.transform !== 'none').length,
+    transf: rules.filter(r => r.sourceField && r.sourceField !== CONSTANT_FIELD && r.transform && r.transform !== 'none').length,
     warns: rules.filter(r => {
-      if (!r.sourceField) return false
+      if (!r.sourceField || r.sourceField === CONSTANT_FIELD) return false
       return getCompatibility(source.types[r.sourceField], target.types[r.targetField]) === 'warn'
     }).length,
   }
 
-  const enrichedRules = rules.map(r => ({
-    ...r,
-    srcType: r.sourceField ? source.types[r.sourceField] : null,
-    tgtType: target.types[r.targetField],
-    compat: r.sourceField
-      ? getCompatibility(source.types[r.sourceField], target.types[r.targetField])
-      : null,
-    transformOptions: r.sourceField
-      ? getTransformOptions(source.types[r.sourceField], target.types[r.targetField])
-      : [],
-  }))
+  const enrichedRules = rules.map(r => {
+    const isConstant = r.sourceField === CONSTANT_FIELD
+    return {
+      ...r,
+      isConstant,
+      srcType: (r.sourceField && !isConstant) ? source.types[r.sourceField] : null,
+      tgtType: target.types[r.targetField],
+      compat: (r.sourceField && !isConstant)
+        ? getCompatibility(source.types[r.sourceField], target.types[r.targetField])
+        : null,
+      transformOptions: (r.sourceField && !isConstant)
+        ? getTransformOptions(source.types[r.sourceField], target.types[r.targetField])
+        : [],
+    }
+  })
 
   return {
     step, setStep,
@@ -225,6 +244,7 @@ export function useMapper() {
     buildRules,
     updateRule,
     updateTransform,
+    updateConstant,
     loadSavedMapping,
   }
 }

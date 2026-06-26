@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, Save, Lock, Globe } from 'lucide-react'
 import { saveMapping, saveLocalMapping, checkSecretCode } from '../lib/api'
+import { CONSTANT_FIELD } from '../hooks/useMapper'
 import { Btn } from './UI'
 
 export default function SaveMappingModal({ source, target, rules, onClose }) {
@@ -11,6 +12,9 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
   const [saved, setSaved] = useState(false)
+
+  const constantRules = rules.filter(r => r.sourceField === CONSTANT_FIELD && r.constantValue)
+  const [keepConstantValues, setKeepConstantValues] = useState(false)
 
   async function handleSave() {
     if (!name.trim()) return setError('Le nom est obligatoire')
@@ -30,6 +34,7 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
           targetType: target.types[r.targetField] || 'text',
           sourceField: r.sourceField,
           transform: r.transform || 'none',
+          constantValue: (r.sourceField === CONSTANT_FIELD && keepConstantValues) ? (r.constantValue || '') : '',
         })),
       }
       if (type === 'public') {
@@ -83,6 +88,24 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
                 className="w-full border border-ink-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none"
               />
             </div>
+
+            {constantRules.length > 0 && (
+              <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={keepConstantValues}
+                    onChange={e => setKeepConstantValues(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-xs text-amber-900">
+                    Memoriser aussi {constantRules.length > 1 ? 'les valeurs fixes saisies' : 'la valeur fixe saisie'} ({constantRules.map(r => `${r.targetField} = "${r.constantValue}"`).join(', ')}).
+                    <br />
+                    Par defaut, seul le champ reste marque "valeur fixe" — la saisie sera a refaire a chaque reutilisation du mapping.
+                  </span>
+                </label>
+              </div>
+            )}
 
             <div className="mb-4">
               <label className="block text-xs font-medium text-ink-600 mb-2">Visibilite</label>
