@@ -81,7 +81,7 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
           ) : (
             <>
               <UploadZone
-                label="Fichier a convertir"
+                label="Fichier à convertir"
                 hint="XLS, XLSX, CSV, TXT & FabDis"
                 file={source.file || (pendingSheet?.which === 'source' ? pendingSheet.file : null)}
                 loading={loading.source}
@@ -126,13 +126,13 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
               <button
                 onClick={() => window.location.reload()}
                 className="mt-3 text-xs text-teal-600 underline hover:text-teal-800">
-                Utiliser un autre fichier
+                Changer de fichier
               </button>
             </div>
           ) : (
             <>
               <UploadZone
-                label="Fichier cible si fichier modele mapping absent"
+                label="Fichier cible si fichier modèle mapping absent"
                 hint="XLS, XLSX, CSV, TXT & FabDis"
                 file={target.file || (pendingSheet?.which === 'target' ? pendingSheet.file : null)}
                 loading={loading.target}

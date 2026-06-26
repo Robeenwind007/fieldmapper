@@ -35,6 +35,13 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.6.2 — Juin 2026
+- Harmonisation : bouton "Changer de fichier" ajouté côté source dans `UploadZone` (`src/components/UI.jsx`), aligné sur le comportement qui n'existait jusque-là que côté cible
+- Une fois un fichier chargé, cliquer sur la zone ne rouvre plus le sélecteur implicitement ; seul le bouton dédié déclenche le changement
+
+### v2.6.1 — Juin 2026
+- Correction de fautes d'accent dans les libellés des zones d'upload (« à convertir », « modèle »)
+
 ### v2.6.0 — Juin 2026
 - Glisser-déposer des fichiers source et cible sur les zones d'upload, en plus du clic classique (`UploadZone` dans `src/components/UI.jsx`)
 - Retour visuel (bordure et fond bordeaux) pendant le survol du fichier glissé

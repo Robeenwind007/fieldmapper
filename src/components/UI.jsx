@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Upload, CheckCircle, AlertTriangle, Check, Info } from 'lucide-react'
 
 export function StepNav({ current }) {
@@ -30,6 +30,7 @@ export function StepNav({ current }) {
 export function UploadZone({ label, hint, file, loading, error, onChange }) {
   const hasFile = !!file
   const [isDragging, setIsDragging] = useState(false)
+  const inputRef = useRef()
 
   function handleDragOver(e) {
     e.preventDefault()
@@ -49,17 +50,28 @@ export function UploadZone({ label, hint, file, loading, error, onChange }) {
     if (droppedFile) onChange(droppedFile)
   }
 
+  function handleChangeClick(e) {
+    e.preventDefault()
+    inputRef.current?.click()
+  }
+
+  function handleLabelClick(e) {
+    if (hasFile) e.preventDefault()
+  }
+
   return (
     <label
+      onClick={handleLabelClick}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`block border-2 rounded-xl p-6 text-center cursor-pointer transition-colors
+      className={`block border-2 rounded-xl p-6 text-center transition-colors
+        ${hasFile ? 'cursor-default' : 'cursor-pointer'}
         ${isDragging ? 'border-bordeaux-400 bg-bordeaux-50' :
           hasFile ? 'border-teal-400 bg-teal-50' :
           error ? 'border-red-300 bg-red-50' :
           'border-dashed border-ink-200 hover:bg-ink-50'}`}>
-      <input type="file" className="hidden" accept=".csv,.txt,.xls,.xlsx"
+      <input ref={inputRef} type="file" className="hidden" accept=".csv,.txt,.xls,.xlsx"
         onChange={e => e.target.files[0] && onChange(e.target.files[0])} />
       <div className={`text-2xl mb-2 flex justify-center
         ${isDragging ? 'text-bordeaux-500' : hasFile ? 'text-teal-600' : error ? 'text-red-400' : 'text-ink-300'}`}>
@@ -76,6 +88,14 @@ export function UploadZone({ label, hint, file, loading, error, onChange }) {
       <p className={`text-xs ${hasFile ? 'text-teal-600' : 'text-ink-400'}`}>
         {error ? error : isDragging ? ' ' : hint}
       </p>
+      {hasFile && !loading && !isDragging && (
+        <button
+          type="button"
+          onClick={handleChangeClick}
+          className="mt-3 text-xs text-teal-600 underline hover:text-teal-800">
+          Changer de fichier
+        </button>
+      )}
     </label>
   )
 }
