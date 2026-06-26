@@ -18,12 +18,14 @@ export function useMapper() {
   const [pendingSheet, setPendingSheet] = useState(null)
   const [activeTargetSheet, setActiveTargetSheet] = useState(null)
   const [sheetRules, setSheetRules] = useState({})
+  const [targetOnlyMode, setTargetOnlyMode] = useState(false)
 
   const loadFile = useCallback(async (which, file) => {
     setLoading(l => ({ ...l, [which]: true }))
     setErrors(e => ({ ...e, [which]: null }))
     try {
       const result = await parseFile(file)
+      if (which === 'source') setTargetOnlyMode(false)
       if (result.multiSheet) {
         if (which === 'source') {
           setSource(emptyFile())
@@ -235,7 +237,10 @@ export function useMapper() {
     pendingSheet,
     activeTargetSheet,
     sheetRules,
-    canProceed: source.headers.length > 0 && target.headers.length > 0 && !pendingSheet,
+    targetOnlyMode,
+    enableTargetOnlyMode: () => setTargetOnlyMode(true),
+    disableTargetOnlyMode: () => setTargetOnlyMode(false),
+    canProceed: target.headers.length > 0 && !pendingSheet && (targetOnlyMode || source.headers.length > 0),
     loadFile,
     resolveSheetChoice,
     switchTargetSheet,

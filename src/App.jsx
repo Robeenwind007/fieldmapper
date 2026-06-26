@@ -4,10 +4,12 @@ import { useMapper, STEPS } from './hooks/useMapper'
 import { StepNav } from './components/UI'
 import StepImport  from './components/StepImport'
 import StepMapping from './components/StepMapping'
+import StepMappingTargetOnly from './components/StepMappingTargetOnly'
 import StepExport  from './components/StepExport'
 import MappingsLibrary from './components/MappingsLibrary'
 import ChangelogModal from './components/ChangelogModal'
 import DocumentationPage from './components/DocumentationPage'
+import SaveMappingModal from './components/SaveMappingModal'
 import { CURRENT_VERSION } from './lib/changelog'
 
 export default function App() {
@@ -16,6 +18,7 @@ export default function App() {
   const [conversionCount, setConversionCount] = useState(0)
   const [showChangelog, setShowChangelog] = useState(false)
   const [showDoc, setShowDoc] = useState(false)
+  const [showSaveTargetOnly, setShowSaveTargetOnly] = useState(false)
 
   useEffect(() => {
     try {
@@ -64,9 +67,22 @@ export default function App() {
               onOpenLibrary={() => libraryRef.current?.open()}
               pendingSheet={mapper.pendingSheet}
               resolveSheetChoice={mapper.resolveSheetChoice}
+              targetOnlyMode={mapper.targetOnlyMode}
+              enableTargetOnlyMode={mapper.enableTargetOnlyMode}
+              disableTargetOnlyMode={mapper.disableTargetOnlyMode}
             />
           )}
-          {mapper.step === STEPS.MAPPING && (
+          {mapper.step === STEPS.MAPPING && mapper.targetOnlyMode && (
+            <StepMappingTargetOnly
+              target={mapper.target}
+              rules={mapper.rules}
+              updateRule={mapper.updateRule}
+              updateConstant={mapper.updateConstant}
+              onBack={handleBackToImport}
+              onSave={() => setShowSaveTargetOnly(true)}
+            />
+          )}
+          {mapper.step === STEPS.MAPPING && !mapper.targetOnlyMode && (
             <StepMapping
               enrichedRules={mapper.enrichedRules}
               source={mapper.source}
@@ -82,7 +98,7 @@ export default function App() {
               saveCurrentSheetRules={mapper.saveCurrentSheetRules}
             />
           )}
-          {mapper.step === STEPS.EXPORT && (
+          {mapper.step === STEPS.EXPORT && !mapper.targetOnlyMode && (
             <StepExport
               source={mapper.source}
               target={mapper.target}
@@ -122,6 +138,18 @@ export default function App() {
 
       <MappingsLibrary ref={libraryRef} onLoad={handleLoadSaved} />
       {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
+      {showSaveTargetOnly && (
+        <SaveMappingModal
+          source={mapper.source}
+          target={mapper.target}
+          rules={mapper.rules}
+          onClose={() => {
+            setShowSaveTargetOnly(false)
+            mapper.disableTargetOnlyMode()
+            mapper.setStep(STEPS.IMPORT)
+          }}
+        />
+      )}
     </div>
   )
 }

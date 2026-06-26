@@ -35,6 +35,11 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.5.0 — Juin 2026
+- Mode "mapping cible seule" (gabarit) : créer un mapping en chargeant uniquement un fichier cible, sans fichier source
+- Pratique pour publier un format de sortie standard à disposition de clients, qui n'ont qu'à associer leurs propres colonnes ensuite
+- Possibilité de pré-configurer des valeurs fixes sur ce gabarit avant sauvegarde (`src/components/StepMappingTargetOnly.jsx`)
+
 ### v2.4.1 — Juin 2026
 - Bouton "Nouveautés" déplacé dans le pied de page, au-dessus du compteur de fichiers convertis
 - Ajout d'une page de documentation complète (`src/components/DocumentationPage.jsx`), accessible depuis le pied de page

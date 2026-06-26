@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, AlertTriangle } from 'lucide-react'
+import { ArrowRight, BookOpen, AlertTriangle, FileCog } from 'lucide-react'
 import { UploadZone, Btn } from './UI'
 import SheetPicker from './SheetPicker'
 
@@ -31,10 +31,10 @@ function FileSizeWarning({ file }) {
   return null
 }
 
-export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice }) {
+export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice, targetOnlyMode, enableTargetOnlyMode, disableTargetOnlyMode }) {
   const hasTarget = target.headers.length > 0
   const hasPending = !!pendingSheet
-  const canProceed = source.headers.length > 0 && hasTarget && !hasPending
+  const canProceed = hasTarget && !hasPending && (targetOnlyMode || source.headers.length > 0)
   const isBlocked = source.file && source.file.size > MAX_SIZE
 
   return (
@@ -42,29 +42,48 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <p className="text-sm font-medium text-ink-700 mb-2">Fichier source</p>
-          <UploadZone
-            label="Fichier a convertir"
-            hint="XLS, XLSX, CSV, TXT & FabDis"
-            file={source.file || (pendingSheet?.which === 'source' ? pendingSheet.file : null)}
-            loading={loading.source}
-            error={errors.source}
-            onChange={f => loadFile('source', f)}
-          />
-          <FileSizeWarning file={source.file} />
-          {pendingSheet?.which === 'source' && (
-            <SheetPicker
-              which="source"
-              sheetNames={pendingSheet.sheetNames}
-              onResolve={resolveSheetChoice}
-            />
-          )}
-          {source.headers.length > 0 && !isBlocked && !hasPending && (
-            <p className="text-xs text-ink-400 mt-2 text-center">
-              {source.selectedSheet && (
-                <span className="mr-1 font-medium text-ink-500">[{source.selectedSheet}]</span>
+          {targetOnlyMode ? (
+            <div className="border-2 border-dashed border-bordeaux-200 bg-bordeaux-50 rounded-xl p-6 text-center">
+              <div className="text-2xl mb-2 flex justify-center text-bordeaux-600">
+                <FileCog size={28} />
+              </div>
+              <p className="text-sm font-medium text-bordeaux-800 mb-1">Mode gabarit — sans fichier source</p>
+              <p className="text-xs text-bordeaux-600 mb-3">
+                Vous créez un mapping basé uniquement sur la structure cible
+              </p>
+              <button
+                onClick={disableTargetOnlyMode}
+                className="text-xs text-bordeaux-600 underline hover:text-bordeaux-800">
+                Annuler — charger un fichier source
+              </button>
+            </div>
+          ) : (
+            <>
+              <UploadZone
+                label="Fichier a convertir"
+                hint="XLS, XLSX, CSV, TXT & FabDis"
+                file={source.file || (pendingSheet?.which === 'source' ? pendingSheet.file : null)}
+                loading={loading.source}
+                error={errors.source}
+                onChange={f => loadFile('source', f)}
+              />
+              <FileSizeWarning file={source.file} />
+              {pendingSheet?.which === 'source' && (
+                <SheetPicker
+                  which="source"
+                  sheetNames={pendingSheet.sheetNames}
+                  onResolve={resolveSheetChoice}
+                />
               )}
-              {source.headers.length} colonnes - {source.data.length} lignes
-            </p>
+              {source.headers.length > 0 && !isBlocked && !hasPending && (
+                <p className="text-xs text-ink-400 mt-2 text-center">
+                  {source.selectedSheet && (
+                    <span className="mr-1 font-medium text-ink-500">[{source.selectedSheet}]</span>
+                  )}
+                  {source.headers.length} colonnes - {source.data.length} lignes
+                </p>
+              )}
+            </>
           )}
         </div>
 
@@ -119,22 +138,33 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-2">
-        <button
-          onClick={onOpenLibrary}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
-          style={{
-            color: '#c02226',
-            borderColor: '#c02226',
-            background: savedMappingName ? '#e4b9ba' : 'transparent',
-          }}
-          onMouseEnter={e => { if (!savedMappingName) e.currentTarget.style.background = '#fdf2f2' }}
-          onMouseLeave={e => { if (!savedMappingName) e.currentTarget.style.background = 'transparent' }}>
-          <BookOpen size={14} /> Mappings sauvegardés
-        </button>
-        <Btn variant="primary" onClick={onNext} disabled={!canProceed || isBlocked}>
-          Configurer le mapping <ArrowRight size={14} />
-        </Btn>
+      <div className="flex items-center justify-between gap-2">
+        <div>
+          {hasTarget && !source.headers.length && !targetOnlyMode && !hasPending && (
+            <button
+              onClick={enableTargetOnlyMode}
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
+              <FileCog size={13} /> Créer un mapping cible seule (gabarit, sans fichier source)
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenLibrary}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+            style={{
+              color: '#c02226',
+              borderColor: '#c02226',
+              background: savedMappingName ? '#e4b9ba' : 'transparent',
+            }}
+            onMouseEnter={e => { if (!savedMappingName) e.currentTarget.style.background = '#fdf2f2' }}
+            onMouseLeave={e => { if (!savedMappingName) e.currentTarget.style.background = 'transparent' }}>
+            <BookOpen size={14} /> Mappings sauvegardés
+          </button>
+          <Btn variant="primary" onClick={onNext} disabled={!canProceed || isBlocked}>
+            Configurer le mapping <ArrowRight size={14} />
+          </Btn>
+        </div>
       </div>
     </div>
   )

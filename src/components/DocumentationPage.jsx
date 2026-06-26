@@ -99,6 +99,16 @@ export default function DocumentationPage({ onClose }) {
               'Un champ source déjà attribué à une autre colonne cible disparaît des listes restantes, pour éviter les doublons involontaires.',
               'La sélection peut être modifiée à tout moment avant l\'export.',
             ]} />
+            <SubTitle>Mapping "cible seule" (gabarit)</SubTitle>
+            <p>
+              Si seul un fichier cible est chargé, un lien apparaît pour créer un mapping
+              "cible seule" : un gabarit basé uniquement sur la structure du fichier de
+              sortie attendu, sans fichier source associé. Pratique pour publier un format
+              standard à disposition de plusieurs clients, qui n'auront ensuite qu'à
+              associer leurs propres colonnes source en chargeant ce mapping depuis la
+              bibliothèque. Des valeurs fixes peuvent y être préconfigurées avant
+              sauvegarde.
+            </p>
           </Section>
 
           <Section id="valeur-fixe" title="Valeur fixe">
