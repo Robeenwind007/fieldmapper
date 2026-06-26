@@ -69,7 +69,6 @@ export default function DocumentationPage({ onClose }) {
             <NavLink href="#transformations">Transformations</NavLink>
             <NavLink href="#mappings">Mappings sauvegardés</NavLink>
             <NavLink href="#limites">Limites fichiers</NavLink>
-            <NavLink href="#deploiement">Déploiement</NavLink>
           </div>
         </nav>
 
@@ -222,18 +221,6 @@ export default function DocumentationPage({ onClose }) {
               'Blocage (rouge) au-delà de 20 Mo : risque de crash du navigateur, il est recommandé de découper le fichier.',
               'Limite pratique recommandée : 10 Mo / 50 000 lignes environ.',
             ]} />
-          </Section>
-
-          <Section id="deploiement" title="Déploiement">
-            <p>
-              FieldMapper est une application React/Vite déployée sur Cloudflare Pages, avec
-              une base Cloudflare D1 pour la persistance des mappings publics et des Pages
-              Functions pour l'API REST légère.
-            </p>
-            <p>
-              Le détail technique de la stack, de la structure du projet et des commandes de
-              déploiement est disponible dans le fichier <code className="px-1.5 py-0.5 rounded bg-ink-50 text-ink-800 text-xs">README.md</code> du dépôt.
-            </p>
           </Section>
 
           <p className="text-xs text-ink-300 pt-4 border-t border-ink-100">

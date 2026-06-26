@@ -35,6 +35,9 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.5.2 — Juin 2026
+- Documentation intégrée (`DocumentationPage.jsx`) : suppression de la section "Déploiement", réservée à un usage technique interne. Cette information reste disponible dans ce README.
+
 ### v2.5.1 — Juin 2026
 - Correctif : l'endpoint `GET /api/mappings` ne renvoyait pas la colonne `rules`, ce qui vidait silencieusement l'export JSON et le chargement d'un mapping public (les règles étaient absentes). Le détail complet est maintenant récupéré via `GET /api/mappings/:id` avant export ou chargement.
 - Nouveau : lien "importer un mapping (.json) à la place du fichier" sous la zone d'upload du fichier cible, à l'étape Import — pratique pour réutiliser directement un gabarit exporté sans passer par la bibliothèque.
