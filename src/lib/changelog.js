@@ -2,9 +2,17 @@
 // À chaque modification notable de l'application, ajouter une nouvelle entrée en tête de
 // CHANGELOG_HISTORY (la plus récente en premier) et mettre à jour CURRENT_VERSION.
 
-export const CURRENT_VERSION = '2.7.3'
+export const CURRENT_VERSION = '2.7.4'
 
 export const CHANGELOG_HISTORY = [
+  {
+    version: '2.7.4',
+    date: '26 juin 2026',
+    items: [
+      'L\'aperçu avant export calcule désormais jusqu\'à 100 lignes (au lieu de 10), avec un vrai défilement vertical pour les fichiers volumineux',
+      'Le texte du bandeau indique le nombre réel de lignes affichées, et le total du fichier si celui-ci dépasse 100 lignes',
+    ],
+  },
   {
     version: '2.7.3',
     date: '26 juin 2026',

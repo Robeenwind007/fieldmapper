@@ -29,7 +29,8 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
   const [showSave, setShowSave] = useState(false)
 
   const isMultiSheet = target.perSheet && target.sheetNames?.length > 0
-  const preview = buildOutputRows(target.headers, source.data.slice(0, 10), rules)
+  const previewCount = Math.min(100, source.data.length)
+  const preview = buildOutputRows(target.headers, source.data.slice(0, previewCount), rules)
   const transformedCount = rules.filter(r => r.sourceField && r.transform && r.transform !== 'none').length
 
   function doExport() {
@@ -109,7 +110,9 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
       <div className="border border-ink-100 rounded-xl overflow-hidden mb-4">
         <div className="px-4 py-2.5 bg-ink-50 border-b border-ink-100">
           <p className="text-xs font-medium text-ink-500">
-            Aperçu — 10 premières lignes
+            Aperçu — {source.data.length > previewCount
+              ? `${previewCount} premières lignes sur ${source.data.length}`
+              : `${previewCount} ligne${previewCount > 1 ? 's' : ''}`}
             {target.selectedSheet && !isMultiSheet && (
               <span className="ml-2 text-ink-400">[{target.selectedSheet}]</span>
             )}

@@ -35,6 +35,10 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.7.4 — Juin 2026
+- Correctif : l'aperçu avant export ne calculait que les 10 premières lignes, donc le tableau n'avait jamais besoin de défiler verticalement même sur un fichier de plusieurs centaines de lignes. La limite passe à 100 lignes (`StepExport.jsx`), ce qui permet un vrai scroll vertical sur les fichiers volumineux.
+- Le texte du bandeau ("Aperçu — ...") indique désormais le nombre réel de lignes affichées, et précise le total du fichier source si celui-ci dépasse 100 lignes.
+
 ### v2.7.3 — Juin 2026
 - Style du tableau d'aperçu à l'étape Export harmonisé avec celui de l'étape Mapping (`StepExport.jsx`) : en-tête collant sur fond gris (`bg-ink-50`) au lieu de blanc, défilement horizontal et vertical unifié sur le même conteneur
 
