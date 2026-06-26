@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Upload, CheckCircle, AlertTriangle, Check, Info } from 'lucide-react'
 
-export function StepNav({ current, onStepClick }) {
+export function StepNav({ current, onStepClick, isExportDone }) {
   const steps = [
     { n: 1, label: 'Import' },
     { n: 2, label: 'Mapping & types' },
@@ -10,8 +10,8 @@ export function StepNav({ current, onStepClick }) {
   return (
     <div className="flex items-center gap-3 mb-6">
       {steps.map((s, i) => {
-        const isPast = current > s.n
-        const clickable = isPast && onStepClick
+        const isDone = current > s.n || (s.n === 3 && isExportDone)
+        const clickable = current > s.n && onStepClick
         return (
           <div key={s.n} className="flex items-center gap-3 flex-1 last:flex-none">
             <button
@@ -20,11 +20,11 @@ export function StepNav({ current, onStepClick }) {
               onClick={() => clickable && onStepClick(s.n)}
               className={`flex items-center gap-2 ${clickable ? 'cursor-pointer group' : 'cursor-default'}`}>
               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0 border transition-colors
-                ${isPast ? 'bg-teal-400 border-teal-400 text-white' :
+                ${isDone ? 'bg-teal-400 border-teal-400 text-white' :
                   current === s.n ? 'bg-ink-900 border-ink-900 text-white' :
                   'border-ink-200 text-ink-400'}
                 ${clickable ? 'group-hover:bg-teal-500 group-hover:border-teal-500' : ''}`}>
-                {isPast ? <Check size={12} /> : s.n}
+                {isDone ? <Check size={12} /> : s.n}
               </div>
               <span className={`text-xs whitespace-nowrap ${current === s.n ? 'text-ink-900 font-medium' : 'text-ink-400'}
                 ${clickable ? 'group-hover:text-teal-700' : ''}`}>

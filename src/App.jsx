@@ -20,6 +20,7 @@ export default function App() {
   const [showDoc, setShowDoc] = useState(false)
   const [showSaveTargetOnly, setShowSaveTargetOnly] = useState(false)
   const [justReset, setJustReset] = useState(false)
+  const [exportDone, setExportDone] = useState(false)
 
   useEffect(() => {
     try {
@@ -45,6 +46,7 @@ export default function App() {
 
   function handleReset() {
     setJustReset(true)
+    setExportDone(false)
     mapper.setStep(STEPS.IMPORT)
   }
 
@@ -68,7 +70,7 @@ export default function App() {
 
       <div className="flex-1 px-6 pb-10">
         <div className="bg-white rounded-2xl border border-ink-100 p-6 max-w-7xl mx-auto">
-          <StepNav current={mapper.step} onStepClick={handleStepClick} />
+          <StepNav current={mapper.step} onStepClick={handleStepClick} isExportDone={exportDone} />
           {mapper.step === STEPS.IMPORT && (
             <StepImport
               source={mapper.source}
@@ -122,8 +124,9 @@ export default function App() {
               rules={mapper.rules}
               stats={mapper.stats}
               sheetRules={mapper.sheetRules}
-              onBack={() => mapper.setStep(STEPS.MAPPING)}
+              onBack={() => { setExportDone(false); mapper.setStep(STEPS.MAPPING) }}
               onReset={handleReset}
+              onExported={() => setExportDone(true)}
             />
           )}
         </div>

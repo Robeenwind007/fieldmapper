@@ -35,6 +35,16 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.7.3 — Juin 2026
+- Style du tableau d'aperçu à l'étape Export harmonisé avec celui de l'étape Mapping (`StepExport.jsx`) : en-tête collant sur fond gris (`bg-ink-50`) au lieu de blanc, défilement horizontal et vertical unifié sur le même conteneur
+
+### v2.7.2 — Juin 2026
+- L'étape "Export" du fil d'Ariane (`StepNav` dans `UI.jsx`) passe en coché après le téléchargement effectif du fichier, plutôt que de ne jamais se cocher puisqu'elle est la dernière étape
+- Le coché disparaît si l'on revient modifier le mapping ou si l'on clique sur "Recommencer", pour ne pas laisser croire qu'un export à jour a déjà été fait
+
+### v2.7.1 — Juin 2026
+- Le bouton "Nouveautés" affiche désormais tout l'historique des versions (`CHANGELOG_HISTORY` dans `src/lib/changelog.js`), la plus récente ouverte par défaut et les précédentes accessibles en accordéon dans `ChangelogModal.jsx`
+
 ### v2.7.0 — Juin 2026
 Lot de corrections UX suite aux retours de Stéphanie Gloaguen (service projet) :
 - Fil d'Ariane cliquable pour revenir aux étapes déjà passées (`UI.jsx` / `App.jsx`)

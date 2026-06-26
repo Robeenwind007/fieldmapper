@@ -24,7 +24,7 @@ function incrementConversionCount() {
   } catch {}
 }
 
-export default function StepExport({ source, target, rules, stats, sheetRules, onBack, onReset }) {
+export default function StepExport({ source, target, rules, stats, sheetRules, onBack, onReset, onExported }) {
   const [exported, setExported] = useState(false)
   const [showSave, setShowSave] = useState(false)
 
@@ -66,6 +66,7 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
 
     incrementConversionCount()
     setExported(true)
+    onExported?.()
   }
 
   function parseSheetForExport(wb, sheetName) {
@@ -114,9 +115,9 @@ export default function StepExport({ source, target, rules, stats, sheetRules, o
             )}
           </p>
         </div>
-        <div className="overflow-x-auto overflow-y-auto max-h-96">
+        <div className="overflow-auto max-h-96">
           <table className="w-full text-xs border-collapse" style={{ tableLayout: 'auto', minWidth: '100%' }}>
-            <thead className="sticky top-0 bg-white z-10">
+            <thead className="sticky top-0 bg-ink-50 z-10">
               <tr>
                 {target.headers.map(h => {
                   const rule = rules.find(r => r.targetField === h)
