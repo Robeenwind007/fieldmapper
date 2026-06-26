@@ -29,7 +29,9 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     } finally {
       setLoading(false)
     }
-    setLocalMappings(getLocalMappings())
+    const local = getLocalMappings()
+    setLocalMappings(local)
+    if (local.length === 0) setTab('public')
   }
 
   useEffect(() => { if (open) load() }, [open])
@@ -51,7 +53,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
     setConfirmDelete({
       id,
       type: 'local',
-      message: 'Ce mapping local sera supprimé de cet appareil.',
+      message: 'Ce mapping personnel sera supprimé de cet appareil.',
       requireCode: false,
       code: '',
       codeError: false,
@@ -179,7 +181,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
               <button
                 onClick={() => setTab('local')}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium transition-colors ${tab === 'local' ? 'text-ink-900 border-b-2 border-ink-900' : 'text-ink-400 hover:text-ink-600'}`}>
-                <Lock size={11} /> Local
+                <Lock size={11} /> Personnel
               </button>
               <button
                 onClick={() => setTab('public')}
@@ -207,7 +209,7 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
               {error && tab === 'public' && <p className="text-xs text-red-500 p-3 text-center">{error}</p>}
               {!loading && mappings.length === 0 && (
                 <p className="text-xs text-ink-400 p-3 text-center">
-                  {tab === 'local' ? 'Aucun mapping local sur cet appareil' : 'Aucun mapping public'}
+                  {tab === 'local' ? 'Aucun mapping personnel sur cet appareil' : 'Aucun mapping public'}
                 </p>
               )}
               {mappings.map(m => {
@@ -240,10 +242,15 @@ const MappingsLibrary = forwardRef(function MappingsLibrary({ onLoad }, ref) {
                       title="Exporter en JSON">
                       <Download size={13} />
                     </button>
+                    {!m.isLocal && (
+                      <span className="text-[10px] font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                        Public
+                      </span>
+                    )}
                     <button
                       onClick={e => m.isLocal ? handleDeleteLocal(m.id, e) : handleDeletePublic(m.id, e)}
                       className="p-1 rounded-lg text-ink-300 hover:text-red-500 hover:bg-red-50"
-                      title="Supprimer">
+                      title={m.isLocal ? 'Supprimer (cet appareil uniquement)' : 'Supprimer pour tous les utilisateurs (code requis)'}>
                       <Trash2 size={13} />
                     </button>
                     <ChevronRight size={13} className="text-ink-300" />

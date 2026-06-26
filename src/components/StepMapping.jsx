@@ -5,6 +5,7 @@ import { CONSTANT_FIELD } from '../hooks/useMapper'
 export default function StepMapping({ enrichedRules, source, target, updateRule, updateTransform, updateConstant, onBack, onNext, activeTargetSheet, sheetRules, switchTargetSheet, saveCurrentSheetRules }) {
   const warnCount = enrichedRules.filter(r => r.compat === 'warn').length
   const isMultiSheet = target.perSheet && target.sheetNames?.length > 0
+  const emptyConstantCount = enrichedRules.filter(r => r.isConstant && !r.constantValue).length
 
   const usedSourceFields = new Set(
     enrichedRules
@@ -172,11 +173,17 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
         </div>
       </div>
 
+      {emptyConstantCount > 0 && (
+        <Alert type="warn">
+          {emptyConstantCount} valeur{emptyConstantCount > 1 ? 's' : ''} fixe{emptyConstantCount > 1 ? 's' : ''} activée{emptyConstantCount > 1 ? 's' : ''} mais non renseignée{emptyConstantCount > 1 ? 's' : ''} — complétez-la{emptyConstantCount > 1 ? 's' : ''} ou repassez en mapping normal avant de continuer.
+        </Alert>
+      )}
+
       <div className="flex justify-between">
         <Btn variant="outline" onClick={onBack}>
           <ArrowLeft size={14} /> Retour
         </Btn>
-        <Btn variant="primary" onClick={handleNext}>
+        <Btn variant="primary" onClick={handleNext} disabled={emptyConstantCount > 0}>
           Aperçu et export <ArrowRight size={14} />
         </Btn>
       </div>

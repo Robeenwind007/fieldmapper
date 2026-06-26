@@ -115,7 +115,7 @@ export default function SaveMappingModal({ source, target, rules, onClose }) {
                   className={`flex items-center gap-2 p-3 rounded-xl border text-sm transition-colors ${type === 'local' ? 'border-ink-900 bg-ink-900 text-white' : 'border-ink-200 text-ink-600 hover:bg-ink-50'}`}>
                   <Lock size={14} />
                   <div className="text-left">
-                    <p className="font-medium text-xs">Privé</p>
+                    <p className="font-medium text-xs">Personnel</p>
                     <p className={`text-xs ${type === 'local' ? 'text-ink-300' : 'text-ink-400'}`}>Cet appareil</p>
                   </div>
                 </button>

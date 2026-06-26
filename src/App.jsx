@@ -19,6 +19,7 @@ export default function App() {
   const [showChangelog, setShowChangelog] = useState(false)
   const [showDoc, setShowDoc] = useState(false)
   const [showSaveTargetOnly, setShowSaveTargetOnly] = useState(false)
+  const [justReset, setJustReset] = useState(false)
 
   useEffect(() => {
     try {
@@ -42,6 +43,19 @@ export default function App() {
     mapper.setStep(STEPS.IMPORT)
   }
 
+  function handleReset() {
+    setJustReset(true)
+    mapper.setStep(STEPS.IMPORT)
+  }
+
+  function handleStepClick(targetStep) {
+    if (targetStep === STEPS.IMPORT) {
+      handleBackToImport()
+    } else {
+      mapper.setStep(targetStep)
+    }
+  }
+
   if (showDoc) {
     return <DocumentationPage onClose={() => setShowDoc(false)} />
   }
@@ -54,7 +68,7 @@ export default function App() {
 
       <div className="flex-1 px-6 pb-10">
         <div className="bg-white rounded-2xl border border-ink-100 p-6 max-w-7xl mx-auto">
-          <StepNav current={mapper.step} />
+          <StepNav current={mapper.step} onStepClick={handleStepClick} />
           {mapper.step === STEPS.IMPORT && (
             <StepImport
               source={mapper.source}
@@ -71,6 +85,8 @@ export default function App() {
               enableTargetOnlyMode={mapper.enableTargetOnlyMode}
               disableTargetOnlyMode={mapper.disableTargetOnlyMode}
               onImportMapping={handleLoadSaved}
+              justReset={justReset}
+              onDismissReset={() => setJustReset(false)}
             />
           )}
           {mapper.step === STEPS.MAPPING && mapper.targetOnlyMode && (
@@ -107,7 +123,7 @@ export default function App() {
               stats={mapper.stats}
               sheetRules={mapper.sheetRules}
               onBack={() => mapper.setStep(STEPS.MAPPING)}
-              onReset={() => mapper.setStep(STEPS.IMPORT)}
+              onReset={handleReset}
             />
           )}
         </div>

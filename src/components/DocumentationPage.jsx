@@ -191,7 +191,7 @@ export default function DocumentationPage({ onClose }) {
               fixes) peut être sauvegardée pour être réutilisée plus tard sans repasser par
               le mapping manuel.
             </p>
-            <SubTitle>Privé (local)</SubTitle>
+            <SubTitle>Personnel</SubTitle>
             <p>
               Stocké dans le navigateur (localStorage). Visible uniquement sur l'appareil
               courant, sans code requis pour sauvegarder ou supprimer.

@@ -35,6 +35,17 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.7.0 — Juin 2026
+Lot de corrections UX suite aux retours de Stéphanie Gloaguen (service projet) :
+- Fil d'Ariane cliquable pour revenir aux étapes déjà passées (`UI.jsx` / `App.jsx`)
+- Onglet "Publics" sélectionné par défaut dans la bibliothèque si aucun mapping personnel n'existe
+- Renommage de "Local" en "Personnel" (bibliothèque, modale de sauvegarde, documentation)
+- Badge "Public" + tooltip explicite sur le bouton de suppression des mappings partagés
+- Blocage du bouton "Aperçu et export" si une valeur fixe activée est vide, avec message explicite
+- Aperçu d'export passé de 5 à 10 lignes, avec défilement vertical et en-tête collant
+- Message d'avertissement à l'étape Import après un "Recommencer", rappelant que les fichiers précédents sont encore chargés
+- Alignement en haut (`items-start`) des deux blocs source/cible à l'étape Import
+
 ### v2.6.3 — Juin 2026
 - Passage complet sur tous les libellés visibles de l'application : correction d'une quarantaine d'accents manquants, répartis sur `UI.jsx`, `StepImport.jsx`, `StepMapping.jsx`, `StepExport.jsx`, `SheetPicker.jsx`, `MappingsLibrary.jsx`, `SaveMappingModal.jsx` (ex : Aperçu, Télécharger, Sélectionner, Générer, Sauvegardé, Mémoriser, Découpez, booléen, Visibilité, Privé...)
 

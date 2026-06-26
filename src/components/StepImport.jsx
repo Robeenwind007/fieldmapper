@@ -32,7 +32,7 @@ function FileSizeWarning({ file }) {
   return null
 }
 
-export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice, targetOnlyMode, enableTargetOnlyMode, disableTargetOnlyMode, onImportMapping }) {
+export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice, targetOnlyMode, enableTargetOnlyMode, disableTargetOnlyMode, onImportMapping, justReset, onDismissReset }) {
   const hasTarget = target.headers.length > 0
   const hasPending = !!pendingSheet
   const canProceed = hasTarget && !hasPending && (targetOnlyMode || source.headers.length > 0)
@@ -40,10 +40,16 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
   const importJsonRef = useRef()
   const [importError, setImportError] = useState(null)
 
+  function handleLoadFile(which, file) {
+    onDismissReset?.()
+    loadFile(which, file)
+  }
+
   function handleImportJson(e) {
     const file = e.target.files[0]
     if (!file) return
     setImportError(null)
+    onDismissReset?.()
     const reader = new FileReader()
     reader.onload = evt => {
       try {
@@ -60,7 +66,15 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      {justReset && (source.file || target.file || savedMappingName) && (
+        <div className="mb-4 flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+          <AlertTriangle size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-700">
+            Les fichiers précédents sont toujours chargés. Cliquez sur « Changer de fichier » si vous voulez en utiliser d'autres.
+          </p>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-4 mb-4 items-start">
         <div>
           <p className="text-sm font-medium text-ink-700 mb-2">Fichier source</p>
           {targetOnlyMode ? (
@@ -86,7 +100,7 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
                 file={source.file || (pendingSheet?.which === 'source' ? pendingSheet.file : null)}
                 loading={loading.source}
                 error={errors.source}
-                onChange={f => loadFile('source', f)}
+                onChange={f => handleLoadFile('source', f)}
               />
               <FileSizeWarning file={source.file} />
               {pendingSheet?.which === 'source' && (
@@ -137,7 +151,7 @@ export default function StepImport({ source, target, loading, errors, loadFile, 
                 file={target.file || (pendingSheet?.which === 'target' ? pendingSheet.file : null)}
                 loading={loading.target}
                 error={errors.target}
-                onChange={f => loadFile('target', f)}
+                onChange={f => handleLoadFile('target', f)}
               />
               {!target.file && !hasPending && (
                 <div className="mt-2 text-center">
