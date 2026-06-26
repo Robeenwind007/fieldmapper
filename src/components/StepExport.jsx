@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { ArrowLeft, Download, RotateCcw, Save, BookOpen } from 'lucide-react'
+import { ArrowLeft, Download, RotateCcw, Save } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { applyTransform } from '../lib/types'
-import { CONSTANT_FIELD } from '../hooks/useMapper'
 import { StatCard, Alert, Btn } from './UI'
 import SaveMappingModal from './SaveMappingModal'
 
@@ -11,28 +10,48 @@ function buildOutputRows(targetHeaders, sourceData, rules) {
     targetHeaders.map(tgt => {
       const rule = rules.find(r => r.targetField === tgt)
       if (!rule || !rule.sourceField) return ''
-      if (rule.sourceField === CONSTANT_FIELD) return rule.constantValue ?? ''
       return applyTransform(row[rule.sourceField] ?? '', rule.transform)
     })
   )
 }
 
-export default function StepExport({ source, target, rules, stats, onBack, onReset }) {
+function incrementConversionCount() {
+  try {
+    const current = parseInt(localStorage.getItem('fieldmapper_conversion_count') || '0', 10)
+    localStorage.setItem('fieldmapper_conversion_count', String(current + 1))
+  } catch {}
+}
+
+export default function StepExport({ source, target, rules, stats, sheetRules, onBack, onReset }) {
   const [exported, setExported] = useState(false)
   const [showSave, setShowSave] = useState(false)
 
+  const isMultiSheet = target.perSheet && target.sheetNames?.length > 0
   const preview = buildOutputRows(target.headers, source.data.slice(0, 5), rules)
   const transformedCount = rules.filter(r => r.sourceField && r.transform && r.transform !== 'none').length
 
   function doExport() {
-    const allRows = buildOutputRows(target.headers, source.data, rules)
-    const wb = XLSX.utils.book_new()
-    const ws = XLSX.utils.aoa_to_sheet([target.headers, ...allRows])
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
-    const ext = target.file.name.split('.').pop().toLowerCase()
+    const ext = target.file ? target.file.name.split('.').pop().toLowerCase() : 'xlsx'
     const basename = source.file.name.replace(/\.[^.]+$/, '')
     const filename = `converti_${basename}.${ext}`
+    const wb = XLSX.utils.book_new()
+
+    if (isMultiSheet && target.wb) {
+      target.sheetNames.forEach(sheetName => {
+        const sheetRuleSet = sheetRules[sheetName] || []
+        const sheetResult = parseSheetForExport(target.wb, sheetName)
+        const rows = buildOutputRows(sheetResult.headers, source.data, sheetRuleSet)
+        const ws = XLSX.utils.aoa_to_sheet([sheetResult.headers, ...rows])
+        XLSX.utils.book_append_sheet(wb, ws, sheetName)
+      })
+    } else {
+      const allRows = buildOutputRows(target.headers, source.data, rules)
+      const ws = XLSX.utils.aoa_to_sheet([target.headers, ...allRows])
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1')
+    }
+
     if (ext === 'csv' || ext === 'txt') {
+      const ws = wb.Sheets[wb.SheetNames[0]]
       const csv = XLSX.utils.sheet_to_csv(ws)
       const blob = new Blob([csv], { type: 'text/plain;charset=utf-8' })
       const a = document.createElement('a')
@@ -42,24 +61,59 @@ export default function StepExport({ source, target, rules, stats, onBack, onRes
     } else {
       XLSX.writeFile(wb, filename)
     }
+
+    incrementConversionCount()
     setExported(true)
+  }
+
+  function parseSheetForExport(wb, sheetName) {
+    const ws = wb.Sheets[sheetName]
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' })
+    if (!rows.length) return { headers: [], data: [] }
+    const headers = rows[0].map(h => String(h).trim()).filter(h => h !== '')
+    return { headers }
   }
 
   return (
     <div>
       <div className="grid grid-cols-4 gap-3 mb-4">
-        <StatCard label="Lignes converties"  value={stats.rows} />
-        <StatCard label="Champs mappés"      value={`${stats.mapped}/${stats.total}`} />
-        <StatCard label="Transformations"    value={transformedCount} />
-        <StatCard label="Avertissements"     value={stats.warns} />
+        <StatCard label="Lignes converties" value={stats.rows} />
+        <StatCard label="Champs mappes" value={`${stats.mapped}/${stats.total}`} />
+        <StatCard label="Transformations" value={transformedCount} />
+        <StatCard label="Avertissements" value={stats.warns} />
       </div>
+
+      {isMultiSheet && (
+        <div className="mb-4 p-3 bg-cobalt-50 border border-cobalt-200 rounded-lg">
+          <p className="text-xs font-medium text-cobalt-800 mb-2">Onglets a exporter</p>
+          <div className="flex flex-wrap gap-2">
+            {target.sheetNames.map(name => {
+              const sr = sheetRules[name] || []
+              const mapped = sr.filter(r => r.sourceField).length
+              return (
+                <span key={name}
+                  className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border
+                    ${mapped > 0 ? 'bg-teal-50 border-teal-300 text-teal-800' : 'bg-ink-50 border-ink-200 text-ink-500'}`}>
+                  {name}
+                  <span className="opacity-60">({mapped} champs)</span>
+                </span>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="border border-ink-100 rounded-xl overflow-hidden mb-4">
         <div className="px-4 py-2.5 bg-ink-50 border-b border-ink-100">
-          <p className="text-xs font-medium text-ink-500 uppercase tracking-wide">Aperçu — 5 premières lignes</p>
+          <p className="text-xs font-medium text-ink-500">
+            Apercu — 5 premieres lignes
+            {target.selectedSheet && !isMultiSheet && (
+              <span className="ml-2 text-ink-400">[{target.selectedSheet}]</span>
+            )}
+          </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse" style={{ tableLayout: 'fixed' }}>
+          <table className="w-full text-xs border-collapse" style={{ tableLayout: 'auto', minWidth: '100%' }}>
             <thead>
               <tr>
                 {target.headers.map(h => {
@@ -79,18 +133,14 @@ export default function StepExport({ source, target, rules, stats, onBack, onRes
                 <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-ink-50/40'}>
                   {row.map((cell, ci) => {
                     const rule = rules.find(r => r.targetField === target.headers[ci])
-                    const isConstant = rule?.sourceField === CONSTANT_FIELD
-                    const transformed = !isConstant && rule?.transform && rule.transform !== 'none'
+                    const transformed = rule?.transform && rule.transform !== 'none'
                     return (
                       <td key={ci}
                         className={`px-3 py-1.5 border-b border-ink-50 truncate
-                          ${isConstant ? 'bg-amber-50 text-amber-900' :
-                            transformed ? 'bg-teal-50 text-teal-900' :
+                          ${transformed ? 'bg-teal-50 text-teal-900' :
                             !rule?.sourceField ? 'text-ink-300' : 'text-ink-800'}`}
                         style={{ minWidth: 80 }}>
-                        {rule?.sourceField === CONSTANT_FIELD
-                          ? (rule.constantValue ? String(cell) : <span className="italic text-amber-400">vide</span>)
-                          : rule?.sourceField ? String(cell) : '—'}
+                        {rule?.sourceField ? String(cell) : '—'}
                       </td>
                     )
                   })}
@@ -103,7 +153,7 @@ export default function StepExport({ source, target, rules, stats, onBack, onRes
 
       {exported && (
         <Alert type="success">
-          Fichier téléchargé — {stats.rows} lignes converties, {stats.mapped} champs mappés.
+          Fichier telecharge — {stats.rows} lignes converties, {stats.mapped} champs mappes.
         </Alert>
       )}
 
@@ -119,7 +169,7 @@ export default function StepExport({ source, target, rules, stats, onBack, onRes
           <Save size={14} /> Sauvegarder le mapping
         </Btn>
         <Btn variant="primary" onClick={doExport}>
-          <Download size={14} /> Télécharger
+          <Download size={14} /> Telecharger
         </Btn>
       </div>
 

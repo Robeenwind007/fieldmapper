@@ -1,46 +1,138 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, BookOpen, AlertTriangle } from 'lucide-react'
 import { UploadZone, Btn } from './UI'
+import SheetPicker from './SheetPicker'
 
-export default function StepImport({ source, target, loading, errors, loadFile, onNext }) {
+const WARN_SIZE = 5 * 1024 * 1024
+const MAX_SIZE = 20 * 1024 * 1024
+
+function formatSize(bytes) {
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' Ko'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' Mo'
+}
+
+function FileSizeWarning({ file }) {
+  if (!file) return null
+  if (file.size > MAX_SIZE) return (
+    <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-red-50 border border-red-200">
+      <AlertTriangle size={13} className="text-red-500 flex-shrink-0 mt-0.5" />
+      <p className="text-xs text-red-700">
+        Fichier trop volumineux ({formatSize(file.size)}) — risque de crash au-dessus de 20 Mo. Decoupez-le en plusieurs fichiers.
+      </p>
+    </div>
+  )
+  if (file.size > WARN_SIZE) return (
+    <div className="mt-2 flex items-start gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
+      <AlertTriangle size={13} className="text-amber-500 flex-shrink-0 mt-0.5" />
+      <p className="text-xs text-amber-700">
+        Fichier volumineux ({formatSize(file.size)}) — le traitement peut etre lent sur certains appareils.
+      </p>
+    </div>
+  )
+  return null
+}
+
+export default function StepImport({ source, target, loading, errors, loadFile, onNext, savedMappingName, onOpenLibrary, pendingSheet, resolveSheetChoice }) {
+  const hasTarget = target.headers.length > 0
+  const hasPending = !!pendingSheet
+  const canProceed = source.headers.length > 0 && hasTarget && !hasPending
+  const isBlocked = source.file && source.file.size > MAX_SIZE
+
   return (
     <div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
           <p className="text-sm font-medium text-ink-700 mb-2">Fichier source</p>
           <UploadZone
-            label="Fichier à convertir"
-            hint="XLS, XLSX, CSV, TXT"
-            file={source.file}
+            label="Fichier a convertir"
+            hint="XLS, XLSX, CSV, TXT & FabDis"
+            file={source.file || (pendingSheet?.which === 'source' ? pendingSheet.file : null)}
             loading={loading.source}
             error={errors.source}
             onChange={f => loadFile('source', f)}
           />
-          {source.headers.length > 0 && (
+          <FileSizeWarning file={source.file} />
+          {pendingSheet?.which === 'source' && (
+            <SheetPicker
+              which="source"
+              sheetNames={pendingSheet.sheetNames}
+              onResolve={resolveSheetChoice}
+            />
+          )}
+          {source.headers.length > 0 && !isBlocked && !hasPending && (
             <p className="text-xs text-ink-400 mt-2 text-center">
-              {source.headers.length} colonnes · {source.data.length} lignes
+              {source.selectedSheet && (
+                <span className="mr-1 font-medium text-ink-500">[{source.selectedSheet}]</span>
+              )}
+              {source.headers.length} colonnes - {source.data.length} lignes
             </p>
           )}
         </div>
+
         <div>
-          <p className="text-sm font-medium text-ink-700 mb-2">Fichier cible</p>
-          <UploadZone
-            label="Format de destination"
-            hint="XLS, XLSX, CSV, TXT"
-            file={target.file}
-            loading={loading.target}
-            error={errors.target}
-            onChange={f => loadFile('target', f)}
-          />
-          {target.headers.length > 0 && (
+          <p className="text-sm font-medium text-ink-700 mb-2">
+            Fichier cible
+            {savedMappingName && (
+              <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-teal-50 text-teal-800 border border-teal-200">
+                {savedMappingName}
+              </span>
+            )}
+          </p>
+
+          {savedMappingName ? (
+            <div className="border-2 border-teal-400 bg-teal-50 rounded-xl p-6 text-center">
+              <div className="text-2xl mb-2 flex justify-center text-teal-600">OK</div>
+              <p className="text-sm font-medium text-teal-800 mb-1">Structure chargee depuis le mapping</p>
+              <p className="text-xs text-teal-600">{target.headers.length} colonnes definies</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-3 text-xs text-teal-600 underline hover:text-teal-800">
+                Utiliser un autre fichier
+              </button>
+            </div>
+          ) : (
+            <UploadZone
+              label="Fichier cible si fichier modele mapping absent"
+              hint="XLS, XLSX, CSV, TXT & FabDis"
+              file={target.file || (pendingSheet?.which === 'target' ? pendingSheet.file : null)}
+              loading={loading.target}
+              error={errors.target}
+              onChange={f => loadFile('target', f)}
+            />
+          )}
+
+          {pendingSheet?.which === 'target' && (
+            <SheetPicker
+              which="target"
+              sheetNames={pendingSheet.sheetNames}
+              onResolve={resolveSheetChoice}
+            />
+          )}
+
+          {target.headers.length > 0 && !savedMappingName && !hasPending && (
             <p className="text-xs text-ink-400 mt-2 text-center">
-              {target.headers.length} colonnes · {target.data.length} lignes
+              {target.selectedSheet && (
+                <span className="mr-1 font-medium text-ink-500">[{target.selectedSheet}]</span>
+              )}
+              {target.headers.length} colonnes - {target.data.length} lignes
             </p>
           )}
         </div>
       </div>
-      <div className="flex justify-end">
-        <Btn variant="primary" onClick={onNext}
-          disabled={!source.headers.length || !target.headers.length}>
+
+      <div className="flex items-center justify-end gap-2">
+        <button
+          onClick={onOpenLibrary}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+          style={{
+            color: '#c02226',
+            borderColor: '#c02226',
+            background: savedMappingName ? '#e4b9ba' : 'transparent',
+          }}
+          onMouseEnter={e => { if (!savedMappingName) e.currentTarget.style.background = '#fdf2f2' }}
+          onMouseLeave={e => { if (!savedMappingName) e.currentTarget.style.background = 'transparent' }}>
+          <BookOpen size={14} /> Mappings sauvegardés
+        </button>
+        <Btn variant="primary" onClick={onNext} disabled={!canProceed || isBlocked}>
           Configurer le mapping <ArrowRight size={14} />
         </Btn>
       </div>

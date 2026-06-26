@@ -59,7 +59,7 @@ export function TypeBadge({ type }) {
     bool:   'bg-purple-100 text-purple-800',
     empty:  'bg-ink-50 text-ink-600',
   }
-  const labels = { text: 'texte', number: 'nombre', date: 'date', bool: 'booléen', empty: 'vide' }
+  const labels = { text: 'texte', number: 'nombre', date: 'date', bool: 'booleen', empty: 'vide' }
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cfg[type] || cfg.empty}`}>
       {labels[type] || type}
@@ -118,5 +118,49 @@ export function Btn({ onClick, disabled, variant = 'outline', children, classNam
       onClick={onClick} disabled={disabled}>
       {children}
     </button>
+  )
+}
+
+export function ConfirmModal({ message, onConfirm, onCancel, requireCode, code, onCodeChange, codeError }) {
+  return (
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100,padding:'1rem'}}>
+      <div className="bg-white rounded-2xl border border-ink-100 w-full max-w-sm p-6">
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+              <path d="M10 11v6M14 11v6"></path>
+              <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"></path>
+            </svg>
+          </div>
+          <div className="w-full">
+            <p className="text-sm font-medium text-ink-900 mb-1">Confirmer la suppression</p>
+            <p className="text-xs text-ink-400 mb-3">{message}</p>
+            {requireCode && (
+              <div className="text-left">
+                <label className="block text-xs font-medium text-ink-600 mb-1">Code administrateur</label>
+                <input
+                  type="password"
+                  value={code}
+                  onChange={e => onCodeChange(e.target.value)}
+                  placeholder="Code requis"
+                  className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none ${codeError ? 'border-red-400 bg-red-50' : 'border-ink-200'}`}
+                />
+                {codeError && <p className="text-xs text-red-500 mt-1">Code incorrect</p>}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-2 w-full">
+            <Btn variant="outline" onClick={onCancel} className="flex-1 justify-center">Annuler</Btn>
+            <button
+              onClick={onConfirm}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-red-500 text-white border border-red-500 hover:opacity-85 transition-colors">
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }

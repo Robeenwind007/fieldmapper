@@ -1,19 +1,75 @@
-import { ArrowLeft, ArrowRight, Pin } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Layers, Check } from 'lucide-react'
 import { TypeBadge, CompatBadge, Alert, Btn } from './UI'
-import { CONSTANT_FIELD } from '../hooks/useMapper'
 
-export default function StepMapping({ enrichedRules, source, target, updateRule, updateTransform, updateConstant, onBack, onNext }) {
+export default function StepMapping({ enrichedRules, source, target, updateRule, updateTransform, onBack, onNext, activeTargetSheet, sheetRules, switchTargetSheet, saveCurrentSheetRules }) {
   const warnCount = enrichedRules.filter(r => r.compat === 'warn').length
+  const isMultiSheet = target.perSheet && target.sheetNames?.length > 0
+
+  const usedSourceFields = new Set(
+    enrichedRules
+      .filter(r => r.sourceField)
+      .map(r => r.sourceField)
+  )
+
+  function handleSheetSwitch(name) {
+    saveCurrentSheetRules()
+    switchTargetSheet(name)
+  }
+
+  function handleNext() {
+    saveCurrentSheetRules()
+    onNext()
+  }
+
+  function getSheetStatus(name) {
+    if (name === activeTargetSheet) return 'active'
+    const saved = sheetRules[name] || []
+    const mapped = saved.filter(r => r.sourceField).length
+    if (mapped > 0) return 'done'
+    return 'empty'
+  }
 
   return (
     <div>
+      {isMultiSheet && (
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Layers size={14} className="text-ink-500" />
+            <p className="text-xs font-medium text-ink-600">Mapper onglet par onglet</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {target.sheetNames.map(name => {
+              const status = getSheetStatus(name)
+              return (
+                <button
+                  key={name}
+                  onClick={() => handleSheetSwitch(name)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors
+                    ${status === 'active' ? 'border-ink-900 bg-ink-900 text-white' :
+                      status === 'done' ? 'border-teal-500 bg-teal-50 text-teal-800' :
+                      'border-ink-200 text-ink-600 hover:bg-ink-50'}`}>
+                  {status === 'done' && <Check size={11} />}
+                  {name}
+                </button>
+              )
+            })}
+          </div>
+          {activeTargetSheet && (
+            <p className="text-xs text-ink-400 mt-2">
+              Onglet actif : <span className="font-medium text-ink-700">{activeTargetSheet}</span>
+              {' · '}{target.headers.length} champs
+            </p>
+          )}
+        </div>
+      )}
+
       <Alert type="info">
-        Les types sont détectés automatiquement. Des transformations sont proposées en cas d'incompatibilité.
+        Les types sont detectes automatiquement. Des transformations sont proposees en cas d incompatibilite.
       </Alert>
 
       {warnCount > 0 && (
         <Alert type="warn">
-          {warnCount} champ(s) avec des types incompatibles — des transformations sont recommandées.
+          {warnCount} champ(s) avec des types incompatibles — des transformations sont recommandees.
         </Alert>
       )}
 
@@ -31,35 +87,19 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
               </tr>
             </thead>
             <tbody>
-              {enrichedRules.map((rule, i) => (
-                <tr key={rule.targetField} className={i % 2 === 0 ? 'bg-white' : 'bg-ink-50/40'}>
-                  <td className="px-3 py-2 font-medium text-ink-800 border-b border-ink-50">
-                    {rule.targetField}
-                  </td>
-                  <td className="px-3 py-2 border-b border-ink-50">
-                    <TypeBadge type={rule.tgtType} />
-                  </td>
-                  <td className="px-3 py-2 border-b border-ink-50">
-                    {rule.isConstant ? (
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="text"
-                          autoFocus
-                          value={rule.constantValue}
-                          onChange={e => updateConstant(rule.targetField, e.target.value)}
-                          placeholder="Valeur fixe…"
-                          className="w-full text-xs rounded-md border border-amber-300 bg-amber-50 text-amber-900 px-2 py-1.5 h-7 font-sans
-                            focus:outline-none focus:ring-1 focus:ring-amber-400 placeholder:text-amber-400"
-                        />
-                        <button
-                          type="button"
-                          title="Revenir au mapping depuis la source"
-                          onClick={() => updateRule(rule.targetField, '')}
-                          className="flex-shrink-0 text-ink-300 hover:text-ink-600 transition-colors">
-                          <ArrowLeft size={13} />
-                        </button>
-                      </div>
-                    ) : (
+              {enrichedRules.map((rule, i) => {
+                const availableFields = source.headers.filter(h =>
+                  !usedSourceFields.has(h) || h === rule.sourceField
+                )
+                return (
+                  <tr key={rule.targetField} className={i % 2 === 0 ? 'bg-white' : 'bg-ink-50/40'}>
+                    <td className="px-3 py-2 font-medium text-ink-800 border-b border-ink-50">
+                      {rule.targetField}
+                    </td>
+                    <td className="px-3 py-2 border-b border-ink-50">
+                      <TypeBadge type={rule.tgtType} />
+                    </td>
+                    <td className="px-3 py-2 border-b border-ink-50">
                       <select
                         value={rule.sourceField}
                         onChange={e => updateRule(rule.targetField, e.target.value)}
@@ -67,44 +107,35 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
                           focus:outline-none focus:ring-1 focus:ring-ink-400
                           ${rule.sourceField ? 'border-teal-400 bg-teal-50 text-teal-900' : 'border-ink-200 text-ink-700'}`}>
                         <option value="">— aucun —</option>
-                        {source.headers.map(h => (
+                        {availableFields.map(h => (
                           <option key={h} value={h}>{h} ({source.types[h]})</option>
                         ))}
-                        <option value={CONSTANT_FIELD}>📌 Valeur fixe…</option>
                       </select>
-                    )}
-                  </td>
-                  <td className="px-3 py-2 border-b border-ink-50">
-                    {rule.isConstant ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                        <Pin size={10} /> fixe
-                      </span>
-                    ) : rule.srcType && <TypeBadge type={rule.srcType} />}
-                  </td>
-                  <td className="px-3 py-2 border-b border-ink-50">
-                    {rule.isConstant ? (
-                      <span className="text-xs text-ink-300">—</span>
-                    ) : <CompatBadge compat={rule.compat} />}
-                  </td>
-                  <td className="px-3 py-2 border-b border-ink-50">
-                    {rule.isConstant ? (
-                      <span className="text-xs text-ink-300">—</span>
-                    ) : rule.transformOptions.length > 0 ? (
-                      <select
-                        value={rule.transform}
-                        onChange={e => updateTransform(rule.targetField, e.target.value)}
-                        className="w-full text-xs rounded-md border border-ink-200 px-2 py-1.5 h-7 bg-white font-sans focus:outline-none focus:ring-1 focus:ring-ink-400 text-ink-700">
-                        <option value="none">Aucune</option>
-                        {rule.transformOptions.map(([val, lbl]) => (
-                          <option key={val} value={val}>{lbl}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      <span className="text-xs text-ink-300">—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-3 py-2 border-b border-ink-50">
+                      {rule.srcType && <TypeBadge type={rule.srcType} />}
+                    </td>
+                    <td className="px-3 py-2 border-b border-ink-50">
+                      <CompatBadge compat={rule.compat} />
+                    </td>
+                    <td className="px-3 py-2 border-b border-ink-50">
+                      {rule.transformOptions.length > 0 ? (
+                        <select
+                          value={rule.transform}
+                          onChange={e => updateTransform(rule.targetField, e.target.value)}
+                          className="w-full text-xs rounded-md border border-ink-200 px-2 py-1.5 h-7 bg-white font-sans focus:outline-none focus:ring-1 focus:ring-ink-400 text-ink-700">
+                          <option value="none">Aucune</option>
+                          {rule.transformOptions.map(([val, lbl]) => (
+                            <option key={val} value={val}>{lbl}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="text-xs text-ink-300">—</span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -114,8 +145,8 @@ export default function StepMapping({ enrichedRules, source, target, updateRule,
         <Btn variant="outline" onClick={onBack}>
           <ArrowLeft size={14} /> Retour
         </Btn>
-        <Btn variant="primary" onClick={onNext}>
-          Aperçu & export <ArrowRight size={14} />
+        <Btn variant="primary" onClick={handleNext}>
+          Apercu et export <ArrowRight size={14} />
         </Btn>
       </div>
     </div>
