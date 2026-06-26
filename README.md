@@ -35,6 +35,10 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.6.0 — Juin 2026
+- Glisser-déposer des fichiers source et cible sur les zones d'upload, en plus du clic classique (`UploadZone` dans `src/components/UI.jsx`)
+- Retour visuel (bordure et fond bordeaux) pendant le survol du fichier glissé
+
 ### v2.5.2 — Juin 2026
 - Documentation intégrée (`DocumentationPage.jsx`) : suppression de la section "Déploiement", réservée à un usage technique interne. Cette information reste disponible dans ce README.
 

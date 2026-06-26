@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Upload, CheckCircle, AlertTriangle, Check, Info } from 'lucide-react'
 
 export function StepNav({ current }) {
@@ -28,24 +29,52 @@ export function StepNav({ current }) {
 
 export function UploadZone({ label, hint, file, loading, error, onChange }) {
   const hasFile = !!file
+  const [isDragging, setIsDragging] = useState(false)
+
+  function handleDragOver(e) {
+    e.preventDefault()
+    if (!loading) setIsDragging(true)
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault()
+    setIsDragging(false)
+  }
+
+  function handleDrop(e) {
+    e.preventDefault()
+    setIsDragging(false)
+    if (loading) return
+    const droppedFile = e.dataTransfer.files?.[0]
+    if (droppedFile) onChange(droppedFile)
+  }
+
   return (
-    <label className={`block border-2 rounded-xl p-6 text-center cursor-pointer transition-colors
-      ${hasFile ? 'border-teal-400 bg-teal-50' :
-        error ? 'border-red-300 bg-red-50' :
-        'border-dashed border-ink-200 hover:bg-ink-50'}`}>
+    <label
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      className={`block border-2 rounded-xl p-6 text-center cursor-pointer transition-colors
+        ${isDragging ? 'border-bordeaux-400 bg-bordeaux-50' :
+          hasFile ? 'border-teal-400 bg-teal-50' :
+          error ? 'border-red-300 bg-red-50' :
+          'border-dashed border-ink-200 hover:bg-ink-50'}`}>
       <input type="file" className="hidden" accept=".csv,.txt,.xls,.xlsx"
         onChange={e => e.target.files[0] && onChange(e.target.files[0])} />
       <div className={`text-2xl mb-2 flex justify-center
-        ${hasFile ? 'text-teal-600' : error ? 'text-red-400' : 'text-ink-300'}`}>
+        ${isDragging ? 'text-bordeaux-500' : hasFile ? 'text-teal-600' : error ? 'text-red-400' : 'text-ink-300'}`}>
         {loading ? (
           <div className="w-7 h-7 border-2 border-current border-t-transparent rounded-full animate-spin" />
         ) : hasFile ? <CheckCircle size={28} /> : <Upload size={28} />}
       </div>
-      <p className={`text-sm font-medium mb-1 ${hasFile ? 'text-teal-800' : 'text-ink-700'}`}>
-        {hasFile ? file.name : label}
+      <p className={`text-sm font-medium mb-1 ${isDragging ? 'text-bordeaux-700' : hasFile ? 'text-teal-800' : 'text-ink-700'}`}>
+        {isDragging ? 'Déposez le fichier ici' : hasFile ? file.name : label}
       </p>
+      {!hasFile && !isDragging && (
+        <p className="text-xs text-ink-300 mb-1">Glissez-déposez ou cliquez</p>
+      )}
       <p className={`text-xs ${hasFile ? 'text-teal-600' : 'text-ink-400'}`}>
-        {error ? error : hint}
+        {error ? error : isDragging ? ' ' : hint}
       </p>
     </label>
   )
