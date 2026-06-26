@@ -7,7 +7,7 @@ export default function ChangelogModal({ onClose }) {
       <div className="bg-white rounded-2xl border border-ink-100 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-teal-600" />
+            <Sparkles size={16} className="text-bordeaux-600" />
             <h2 className="text-base font-medium text-ink-900">Nouveautés</h2>
           </div>
           <button onClick={onClose} className="text-ink-400 hover:text-ink-700 p-1 rounded-lg hover:bg-ink-50">
@@ -22,7 +22,7 @@ export default function ChangelogModal({ onClose }) {
         <ul className="space-y-2 mb-4">
           {CHANGELOG_NOTE.items.map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-ink-700">
-              <span className="text-teal-500 mt-0.5">•</span>
+              <span className="text-bordeaux-500 mt-0.5">•</span>
               <span>{item}</span>
             </li>
           ))}

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, BookOpen } from 'lucide-react'
 import { useMapper, STEPS } from './hooks/useMapper'
 import { StepNav } from './components/UI'
 import StepImport  from './components/StepImport'
@@ -7,6 +7,7 @@ import StepMapping from './components/StepMapping'
 import StepExport  from './components/StepExport'
 import MappingsLibrary from './components/MappingsLibrary'
 import ChangelogModal from './components/ChangelogModal'
+import DocumentationPage from './components/DocumentationPage'
 import { CURRENT_VERSION } from './lib/changelog'
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const libraryRef = useRef()
   const [conversionCount, setConversionCount] = useState(0)
   const [showChangelog, setShowChangelog] = useState(false)
+  const [showDoc, setShowDoc] = useState(false)
 
   useEffect(() => {
     try {
@@ -37,17 +39,14 @@ export default function App() {
     mapper.setStep(STEPS.IMPORT)
   }
 
+  if (showDoc) {
+    return <DocumentationPage onClose={() => setShowDoc(false)} />
+  }
+
   return (
     <div className="min-h-screen bg-ink-50/40 flex flex-col">
-      <div className="relative flex flex-col items-center pt-8 pb-4">
+      <div className="flex flex-col items-center pt-8 pb-4">
         <img src="/logo.png" alt="HerculePro FieldMapper" className="h-24 mb-1" />
-        <button
-          onClick={() => setShowChangelog(true)}
-          title="Voir les notes de version"
-          className="absolute top-6 right-6 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-ink-400 hover:text-teal-700 hover:bg-teal-50 transition-colors">
-          <Sparkles size={13} />
-          <span className="hidden sm:inline">Nouveautés</span>
-        </button>
       </div>
 
       <div className="flex-1 px-6 pb-10">
@@ -97,9 +96,23 @@ export default function App() {
         </div>
 
         <div className="flex items-end justify-between mt-4 max-w-7xl mx-auto">
-          <p className="text-xs text-ink-300">
-            Fichiers convertis : <span className="font-medium text-ink-400">{conversionCount}</span>
-          </p>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowChangelog(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-bordeaux-600 hover:text-bordeaux-800 transition-colors">
+                <Sparkles size={12} /> Nouveautés
+              </button>
+              <button
+                onClick={() => setShowDoc(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
+                <BookOpen size={12} /> Documentation
+              </button>
+            </div>
+            <p className="text-xs text-ink-300">
+              Fichiers convertis : <span className="font-medium text-ink-400">{conversionCount}</span>
+            </p>
+          </div>
           <div className="text-right space-y-1">
             <p className="text-xs text-ink-300">Traitement 100% local — aucun fichier n'est envoyé sur un serveur</p>
             <p className="text-xs text-ink-300">v{CURRENT_VERSION} · © Olivier BERNARD pour HerculePro 2026</p>

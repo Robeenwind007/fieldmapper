@@ -35,6 +35,11 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.4.1 — Juin 2026
+- Bouton "Nouveautés" déplacé dans le pied de page, au-dessus du compteur de fichiers convertis
+- Ajout d'une page de documentation complète (`src/components/DocumentationPage.jsx`), accessible depuis le pied de page
+- Charte graphique bordeaux/gris HerculePro étendue à Tailwind (couleur `bordeaux`) et appliquée aux nouveaux éléments
+
 ### v2.4.0 — Juin 2026
 - Ajout d'un bouton "Notes de version" en haut à droite du logo
 - Modal affichant la note de la dernière version (`src/components/ChangelogModal.jsx`)
