@@ -2,9 +2,16 @@
 // À chaque modification notable de l'application, ajouter une nouvelle entrée en tête de
 // CHANGELOG_HISTORY (la plus récente en premier) et mettre à jour CURRENT_VERSION.
 
-export const CURRENT_VERSION = '2.7.4'
+export const CURRENT_VERSION = '2.7.5'
 
 export const CHANGELOG_HISTORY = [
+  {
+    version: '2.7.5',
+    date: '26 juin 2026',
+    items: [
+      'Correctif : le lien "Changer de fichier" était devenu inopérant (source et cible) à cause d\'un conflit entre le clic du bouton et celui de la zone de dépôt',
+    ],
+  },
   {
     version: '2.7.4',
     date: '26 juin 2026',

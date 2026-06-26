@@ -35,6 +35,9 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.7.5 — Juin 2026
+- Correctif : le lien "Changer de fichier" (`UploadZone` dans `UI.jsx`) ne réagissait plus, côté source comme côté cible. Le clic sur le bouton remontait jusqu'au `<label>` parent, qui annulait l'ouverture du sélecteur de fichier qu'on venait pourtant de déclencher. Ajout de `stopPropagation()` sur le bouton et d'une vérification de la cible de l'événement dans `handleLabelClick`.
+
 ### v2.7.4 — Juin 2026
 - Correctif : l'aperçu avant export ne calculait que les 10 premières lignes, donc le tableau n'avait jamais besoin de défiler verticalement même sur un fichier de plusieurs centaines de lignes. La limite passe à 100 lignes (`StepExport.jsx`), ce qui permet un vrai scroll vertical sur les fichiers volumineux.
 - Le texte du bandeau ("Aperçu — ...") indique désormais le nombre réel de lignes affichées, et précise le total du fichier source si celui-ci dépasse 100 lignes.

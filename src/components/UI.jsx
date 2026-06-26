@@ -64,11 +64,14 @@ export function UploadZone({ label, hint, file, loading, error, onChange }) {
 
   function handleChangeClick(e) {
     e.preventDefault()
+    e.stopPropagation()
     inputRef.current?.click()
   }
 
   function handleLabelClick(e) {
-    if (hasFile) e.preventDefault()
+    if (hasFile && e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+      e.preventDefault()
+    }
   }
 
   return (
