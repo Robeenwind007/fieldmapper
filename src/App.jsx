@@ -54,6 +54,7 @@ export default function App() {
               target={mapper.target}
               updateRule={mapper.updateRule}
               updateTransform={mapper.updateTransform}
+              updateConstant={mapper.updateConstant}
               onBack={() => mapper.setStep(STEPS.IMPORT)}
               onNext={() => mapper.setStep(STEPS.EXPORT)}
             />
