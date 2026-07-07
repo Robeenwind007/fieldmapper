@@ -75,6 +75,15 @@ export default function App() {
       </div>
 
       <div className="flex-1 px-6 pb-10">
+        {mapper.step === STEPS.IMPORT && (
+          <div className="max-w-7xl mx-auto mb-3">
+            <button
+              onClick={() => setShowGrids(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border border-bordeaux-200 text-bordeaux-700 bg-white hover:bg-bordeaux-50 transition-colors">
+              <Grid3x3 size={16} /> Éclater des grilles croisées
+            </button>
+          </div>
+        )}
         <div className="bg-white rounded-2xl border border-ink-100 p-6 max-w-7xl mx-auto">
           <StepNav current={mapper.step} onStepClick={handleStepClick} isExportDone={exportDone} />
           {mapper.step === STEPS.IMPORT && (
@@ -149,11 +158,6 @@ export default function App() {
                 onClick={() => setShowDoc(true)}
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
                 <BookOpen size={12} /> Documentation
-              </button>
-              <button
-                onClick={() => setShowGrids(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
-                <Grid3x3 size={12} /> Éclater des grilles
               </button>
             </div>
             <p className="text-xs text-ink-300">

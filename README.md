@@ -35,6 +35,9 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.8.1 — Juillet 2026
+- L'accès au module d'éclatement de grilles passe d'un lien dans le pied de page à un bouton encadré (charte bordeaux) placé en haut de l'écran d'accueil, visible uniquement à l'étape Import
+
 ### v2.8.0 — Juin 2026
 - Nouveau module **"Éclater des grilles croisées"** (accessible depuis le pied de page), indépendant du flux de mapping classique
 - Détecte automatiquement une structure où plusieurs grilles tarifaires croisées sont superposées sur deux axes imbriqués : une ligne d'étiquettes (produits) + une ligne de dimensions (largeurs) en horizontal, une colonne d'étiquettes (types) + une colonne de dimensions (hauteurs) en vertical

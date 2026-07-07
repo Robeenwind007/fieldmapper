@@ -2,9 +2,16 @@
 // À chaque modification notable de l'application, ajouter une nouvelle entrée en tête de
 // CHANGELOG_HISTORY (la plus récente en premier) et mettre à jour CURRENT_VERSION.
 
-export const CURRENT_VERSION = '2.8.0'
+export const CURRENT_VERSION = '2.8.1'
 
 export const CHANGELOG_HISTORY = [
+  {
+    version: '2.8.1',
+    date: '7 juillet 2026',
+    items: [
+      'L\'accès à l\'éclatement de grilles est désormais un bouton encadré bien visible en haut de l\'écran d\'accueil, au lieu d\'un lien discret dans le pied de page',
+    ],
+  },
   {
     version: '2.8.0',
     date: '26 juin 2026',
