@@ -65,6 +65,7 @@ export default function DocumentationPage({ onClose }) {
             <NavLink href="#mapping">Mapping visuel</NavLink>
             <NavLink href="#valeur-fixe">Valeur fixe</NavLink>
             <NavLink href="#multi-onglets">Multi-onglets &amp; FAB-DIS</NavLink>
+            <NavLink href="#grilles">Éclater des grilles croisées</NavLink>
             <NavLink href="#types">Détection des types</NavLink>
             <NavLink href="#transformations">Transformations</NavLink>
             <NavLink href="#mappings">Mappings sauvegardés</NavLink>
@@ -159,6 +160,27 @@ export default function DocumentationPage({ onClose }) {
               configurés (coche verte) et l'onglet actif. Le choix d'onglets est restauré si
               l'on revient à l'étape d'import.
             </p>
+          </Section>
+
+          <Section id="grilles" title="Éclater des grilles croisées">
+            <p>
+              Accessible depuis le pied de page, cet outil traite un cas particulier :
+              un fichier où plusieurs grilles tarifaires croisées sont superposées sur
+              deux axes imbriqués. Par exemple, une grande matrice qui combine, en
+              horizontal, des produits (Fenêtre, Volet, Store) et des largeurs, et en
+              vertical, des types de dormant et des hauteurs.
+            </p>
+            <SubTitle>Fonctionnement</SubTitle>
+            <List items={[
+              'Chargez le fichier : l\'application détecte automatiquement les axes (étiquettes répétées et dimensions).',
+              'Vérifiez et ajustez si besoin quelles lignes/colonnes portent les étiquettes, les dimensions, et où commencent les valeurs.',
+              'L\'application reconstitue une grille par croisement (ex: Fenêtre × Dormant 100), soit le produit du nombre d\'étiquettes de chaque axe.',
+            ]} />
+            <SubTitle>Export</SubTitle>
+            <List items={[
+              'Structure : un seul fichier avec un onglet par grille, ou un fichier séparé par grille.',
+              'Format : grille croisée (largeurs en colonnes, hauteurs en lignes) ou liste aplatie (une ligne par valeur).',
+            ]} />
           </Section>
 
           <Section id="types" title="Détection des types">

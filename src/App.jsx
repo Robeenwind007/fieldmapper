@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState, useEffect } from 'react'
-import { Sparkles, BookOpen } from 'lucide-react'
+import { Sparkles, BookOpen, Grid3x3 } from 'lucide-react'
 import { useMapper, STEPS } from './hooks/useMapper'
 import { StepNav } from './components/UI'
 import StepImport  from './components/StepImport'
@@ -10,6 +10,7 @@ import MappingsLibrary from './components/MappingsLibrary'
 import ChangelogModal from './components/ChangelogModal'
 import DocumentationPage from './components/DocumentationPage'
 import SaveMappingModal from './components/SaveMappingModal'
+import GridSplitter from './components/GridSplitter'
 import { CURRENT_VERSION } from './lib/changelog'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
   const [conversionCount, setConversionCount] = useState(0)
   const [showChangelog, setShowChangelog] = useState(false)
   const [showDoc, setShowDoc] = useState(false)
+  const [showGrids, setShowGrids] = useState(false)
   const [showSaveTargetOnly, setShowSaveTargetOnly] = useState(false)
   const [justReset, setJustReset] = useState(false)
   const [exportDone, setExportDone] = useState(false)
@@ -60,6 +62,10 @@ export default function App() {
 
   if (showDoc) {
     return <DocumentationPage onClose={() => setShowDoc(false)} />
+  }
+
+  if (showGrids) {
+    return <GridSplitter onClose={() => setShowGrids(false)} />
   }
 
   return (
@@ -143,6 +149,11 @@ export default function App() {
                 onClick={() => setShowDoc(true)}
                 className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
                 <BookOpen size={12} /> Documentation
+              </button>
+              <button
+                onClick={() => setShowGrids(true)}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-400 hover:text-bordeaux-600 transition-colors">
+                <Grid3x3 size={12} /> Éclater des grilles
               </button>
             </div>
             <p className="text-xs text-ink-300">

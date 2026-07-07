@@ -35,6 +35,14 @@ Le footer de l'application affiche automatiquement `v{CURRENT_VERSION}` — pas 
 
 ## Historique des versions
 
+### v2.8.0 — Juin 2026
+- Nouveau module **"Éclater des grilles croisées"** (accessible depuis le pied de page), indépendant du flux de mapping classique
+- Détecte automatiquement une structure où plusieurs grilles tarifaires croisées sont superposées sur deux axes imbriqués : une ligne d'étiquettes (produits) + une ligne de dimensions (largeurs) en horizontal, une colonne d'étiquettes (types) + une colonne de dimensions (hauteurs) en vertical
+- Détection générique (période, nombre de blocs et dimensions déduits dynamiquement), ajustable manuellement via une interface d'aperçu de la structure
+- Reconstitue une grille par couple (étiquette horizontale × étiquette verticale)
+- Export combinable : un seul fichier multi-onglets **ou** un fichier par grille ; format **croisé** (largeurs en colonnes, hauteurs en lignes) **ou** **liste aplatie** (Produit, Type, Largeur, Hauteur, Valeur)
+- Fichiers concernés : `src/lib/gridSplitter.js`, `src/hooks/useGridSplitter.js`, `src/components/GridSplitter.jsx`, `GridStepImport.jsx`, `GridStepConfig.jsx`, `GridStepExport.jsx` ; ajout de `parseFileRaw` dans `src/lib/parser.js`
+
 ### v2.7.5 — Juin 2026
 - Correctif : le lien "Changer de fichier" (`UploadZone` dans `UI.jsx`) ne réagissait plus, côté source comme côté cible. Le clic sur le bouton remontait jusqu'au `<label>` parent, qui annulait l'ouverture du sélecteur de fichier qu'on venait pourtant de déclencher. Ajout de `stopPropagation()` sur le bouton et d'une vérification de la cible de l'événement dans `handleLabelClick`.
 

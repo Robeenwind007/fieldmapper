@@ -2,9 +2,18 @@
 // À chaque modification notable de l'application, ajouter une nouvelle entrée en tête de
 // CHANGELOG_HISTORY (la plus récente en premier) et mettre à jour CURRENT_VERSION.
 
-export const CURRENT_VERSION = '2.7.5'
+export const CURRENT_VERSION = '2.8.0'
 
 export const CHANGELOG_HISTORY = [
+  {
+    version: '2.8.0',
+    date: '26 juin 2026',
+    items: [
+      'Nouveau module "Éclater des grilles croisées" : reconstitue automatiquement des grilles tarifaires imbriquées (ex: largeur × hauteur, répétées par produit et par type)',
+      'Détection automatique des axes, ajustable manuellement, avec aperçu de la structure',
+      'Export au choix : un fichier multi-onglets ou un fichier par grille, en format croisé ou en liste aplatie',
+    ],
+  },
   {
     version: '2.7.5',
     date: '26 juin 2026',

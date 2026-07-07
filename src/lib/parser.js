@@ -1,5 +1,27 @@
 import * as XLSX from 'xlsx'
 
+// Lit un fichier et renvoie la matrice 2D brute (toutes les cellules, sans traitement d'en-têtes).
+// Utilisé par le module d'éclatement de grilles croisées.
+export function parseFileRaw(file, sheetName = null) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true })
+        const sheetNames = wb.SheetNames
+        const targetSheet = sheetName || sheetNames[0]
+        const ws = wb.Sheets[targetSheet]
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null })
+        resolve({ data, sheetNames, selectedSheet: targetSheet })
+      } catch (err) {
+        reject(new Error(`Impossible de lire le fichier : ${err.message}`))
+      }
+    }
+    reader.onerror = () => reject(new Error('Erreur de lecture du fichier'))
+    reader.readAsBinaryString(file)
+  })
+}
+
 export function parseFile(file, sheetName = null) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
